@@ -1,0 +1,407 @@
+{
+  "generatedAt": "2026-05-19T09:10:00.062Z",
+  "policy": {
+    "note": "仅缓存标题、摘要、来源、链接与可信度标签；不搬运媒体全文。",
+    "userAgent": "low-altitude-economy-radar/0.2 (+respectful research crawler)",
+    "requestDelayMs": 2200,
+    "timeoutMs": 12000,
+    "maxItemsPerSource": 8,
+    "obeyRobotsTxt": true,
+    "storeFullText": false,
+    "storeFields": [
+      "title",
+      "summary",
+      "date",
+      "source",
+      "sourceType",
+      "credibility",
+      "url",
+      "canonicalUrl",
+      "keywords"
+    ]
+  },
+  "collected": [
+    {
+      "id": "YXZpYXRpb24td2Vlaz",
+      "title": "European Defense Agency Aerial Refueling Studies Expand To Uncrewed System Needs",
+      "summary": "来自Aviation Week 航空周刊的公开页面线索，需进入原文核验细节。",
+      "url": "https://aviationweek.com/defense/multi-mission-aircraft/european-defense-agency-aerial-refueling-studies-expand-uncrewed",
+      "canonicalUrl": "https://aviationweek.com/defense/multi-mission-aircraft/european-defense-agency-aerial-refueling-studies-expand-uncrewed",
+      "date": "",
+      "market": "全球",
+      "source": "Aviation Week 航空周刊",
+      "sourceId": "aviation-week",
+      "sourceType": "行业媒体",
+      "credibility": "中高",
+      "category": "政策",
+      "cacheMode": "标题与摘要缓存"
+    },
+    {
+      "id": "ZXZ0b2xzLWluc2lnaH",
+      "title": "Bayanat Engineering Brings Advanced Meteorological Sensing to Dubai’s First Commercial 电动垂直起降飞行器 垂直起降场",
+      "summary": "来自eVTOL Insights 行业媒体的公开页面线索，需进入原文核验细节。",
+      "url": "https://evtolinsights.com/bayanat-engineering-brings-advanced-meteorological-sensing-to-dubais-first-commercial-evtol-vertiport/",
+      "canonicalUrl": "https://evtolinsights.com/bayanat-engineering-brings-advanced-meteorological-sensing-to-dubais-first-commercial-evtol-vertiport/",
+      "date": "",
+      "market": "全球",
+      "source": "eVTOL Insights 行业媒体",
+      "sourceId": "evtols-insights",
+      "sourceType": "行业媒体",
+      "credibility": "中",
+      "category": "基建",
+      "cacheMode": "标题与摘要缓存"
+    },
+    {
+      "id": "ZXZ0b2xzLWluc2lnaH",
+      "title": "Medical 无人机 facility launches in Borås – with Everdrone delivering defibrillators to residents in under three minutes",
+      "summary": "来自eVTOL Insights 行业媒体的公开页面线索，需进入原文核验细节。",
+      "url": "https://evtolinsights.com/medical-drone-facility-launches-in-boras-with-everdrone-delivering-defibrillators-to-residents-in-under-three-minutes/",
+      "canonicalUrl": "https://evtolinsights.com/medical-drone-facility-launches-in-boras-with-everdrone-delivering-defibrillators-to-residents-in-under-three-minutes/",
+      "date": "",
+      "market": "全球",
+      "source": "eVTOL Insights 行业媒体",
+      "sourceId": "evtols-insights",
+      "sourceType": "行业媒体",
+      "credibility": "中",
+      "category": "政策",
+      "cacheMode": "标题与摘要缓存"
+    },
+    {
+      "id": "ZXZ0b2xzLWluc2lnaH",
+      "title": "AIRO Unveils Full-Scale Next-Generation Dual-Use 垂直起降飞行器 Aircraft Platform at AUVSI XPONENTIAL",
+      "summary": "来自eVTOL Insights 行业媒体的公开页面线索，需进入原文核验细节。",
+      "url": "https://evtolinsights.com/airo-unveils-full-scale-next-generation-dual-use-vtol-aircraft-platform-at-auvsi-xponential/",
+      "canonicalUrl": "https://evtolinsights.com/airo-unveils-full-scale-next-generation-dual-use-vtol-aircraft-platform-at-auvsi-xponential/",
+      "date": "",
+      "market": "全球",
+      "source": "eVTOL Insights 行业媒体",
+      "sourceId": "evtols-insights",
+      "sourceType": "行业媒体",
+      "credibility": "中",
+      "category": "基建",
+      "cacheMode": "标题与摘要缓存"
+    },
+    {
+      "id": "ZXZ0b2xzLWluc2lnaH",
+      "title": "Farnborough Air Show 2026: On-Site Video Interviews",
+      "summary": "来自eVTOL Insights 行业媒体的公开页面线索，需进入原文核验细节。",
+      "url": "https://evtolinsights.com/event/farnborough-air-show-2026-on-site-video-interviews/",
+      "canonicalUrl": "https://evtolinsights.com/event/farnborough-air-show-2026-on-site-video-interviews/",
+      "date": "",
+      "market": "全球",
+      "source": "eVTOL Insights 行业媒体",
+      "sourceId": "evtols-insights",
+      "sourceType": "行业媒体",
+      "credibility": "中",
+      "category": "政策",
+      "cacheMode": "标题与摘要缓存"
+    },
+    {
+      "id": "ZXZ0b2xzLWluc2lnaH",
+      "title": "电动垂直起降飞行器 Insights’ Europe Conference 2026: Toulouse, France",
+      "summary": "来自eVTOL Insights 行业媒体的公开页面线索，需进入原文核验细节。",
+      "url": "https://evtolinsights.com/event/evtol-insights-europe-conference-2026-toulouse-france/",
+      "canonicalUrl": "https://evtolinsights.com/event/evtol-insights-europe-conference-2026-toulouse-france/",
+      "date": "",
+      "market": "全球",
+      "source": "eVTOL Insights 行业媒体",
+      "sourceId": "evtols-insights",
+      "sourceType": "行业媒体",
+      "credibility": "中",
+      "category": "基建",
+      "cacheMode": "标题与摘要缓存"
+    },
+    {
+      "id": "ZXZ0b2xzLWluc2lnaH",
+      "title": "电动垂直起降飞行器 Insights’ North America Conference 2027: Arizona",
+      "summary": "来自eVTOL Insights 行业媒体的公开页面线索，需进入原文核验细节。",
+      "url": "https://evtolinsights.com/event/evtol-insights-north-america-conference-2027-arizona/",
+      "canonicalUrl": "https://evtolinsights.com/event/evtol-insights-north-america-conference-2027-arizona/",
+      "date": "",
+      "market": "全球",
+      "source": "eVTOL Insights 行业媒体",
+      "sourceId": "evtols-insights",
+      "sourceType": "行业媒体",
+      "credibility": "中",
+      "category": "基建",
+      "cacheMode": "标题与摘要缓存"
+    }
+  ],
+  "sourceCatalog": [
+    {
+      "id": "gov-cn",
+      "market": "中国",
+      "type": "官方发布",
+      "credibility": "高",
+      "name": "中国政府网",
+      "url": "https://www.gov.cn/",
+      "crawlMode": "watch-page",
+      "cadenceHours": 12,
+      "keywords": [
+        "低空经济",
+        "无人机",
+        "通用航空",
+        "空域",
+        "适航"
+      ]
+    },
+    {
+      "id": "caac",
+      "market": "中国",
+      "type": "官方发布",
+      "credibility": "高",
+      "name": "中国民用航空局",
+      "url": "https://www.caac.gov.cn/",
+      "crawlMode": "watch-page",
+      "cadenceHours": 12,
+      "keywords": [
+        "低空经济",
+        "无人机",
+        "通用航空",
+        "适航",
+        "空域"
+      ]
+    },
+    {
+      "id": "miit",
+      "market": "中国",
+      "type": "官方发布",
+      "credibility": "高",
+      "name": "工业和信息化部",
+      "url": "https://www.miit.gov.cn/",
+      "crawlMode": "watch-page",
+      "cadenceHours": 24,
+      "keywords": [
+        "低空经济",
+        "无人机",
+        "航空装备",
+        "电动垂直起降",
+        "通用航空"
+      ]
+    },
+    {
+      "id": "local-gov",
+      "market": "中国",
+      "type": "地方政府",
+      "credibility": "高",
+      "name": "地方政府与发改委公开信息",
+      "url": "https://www.gov.cn/fuwu/dfbm.htm",
+      "crawlMode": "watch-page",
+      "cadenceHours": 24,
+      "keywords": [
+        "低空经济",
+        "产业园",
+        "试点",
+        "空域",
+        "起降点"
+      ]
+    },
+    {
+      "id": "faa",
+      "market": "美国",
+      "type": "官方发布",
+      "credibility": "高",
+      "name": "美国联邦航空管理局",
+      "url": "https://www.faa.gov/AAM",
+      "crawlMode": "watch-page",
+      "cadenceHours": 12,
+      "keywords": [
+        "Advanced Air Mobility",
+        "electric vertical takeoff",
+        "vertiport",
+        "unmanned aircraft"
+      ]
+    },
+    {
+      "id": "nasa",
+      "market": "美国",
+      "type": "官方发布",
+      "credibility": "高",
+      "name": "美国国家航空航天局",
+      "url": "https://www.nasa.gov/mission/advanced-air-mobility/",
+      "crawlMode": "rss",
+      "cadenceHours": 12,
+      "keywords": [
+        "Advanced Air Mobility",
+        "drone",
+        "airspace",
+        "aviation"
+      ]
+    },
+    {
+      "id": "dot",
+      "market": "美国",
+      "type": "官方发布",
+      "credibility": "高",
+      "name": "美国交通部",
+      "url": "https://www.transportation.gov/",
+      "crawlMode": "watch-page",
+      "cadenceHours": 24,
+      "keywords": [
+        "Advanced Air Mobility",
+        "aviation",
+        "drone",
+        "infrastructure"
+      ]
+    },
+    {
+      "id": "easa",
+      "market": "欧洲",
+      "type": "官方发布",
+      "credibility": "高",
+      "name": "欧洲航空安全局",
+      "url": "https://www.easa.europa.eu/en/domains/drones-air-mobility/topics/urban-air-mobility-uam",
+      "crawlMode": "watch-page",
+      "cadenceHours": 24,
+      "keywords": [
+        "Urban Air Mobility",
+        "U-space",
+        "drone",
+        "electric vertical takeoff"
+      ]
+    },
+    {
+      "id": "joby-ir",
+      "market": "美国",
+      "type": "企业公告",
+      "credibility": "高",
+      "name": "Joby Aviation 投资者关系",
+      "url": "https://ir.jobyaviation.com/",
+      "crawlMode": "watch-page",
+      "cadenceHours": 24,
+      "keywords": [
+        "certification",
+        "aircraft",
+        "delivery",
+        "commercial"
+      ]
+    },
+    {
+      "id": "archer-ir",
+      "market": "美国",
+      "type": "企业公告",
+      "credibility": "高",
+      "name": "Archer Aviation 投资者关系",
+      "url": "https://investors.archer.com/",
+      "crawlMode": "watch-page",
+      "cadenceHours": 24,
+      "keywords": [
+        "aircraft",
+        "certification",
+        "manufacturing",
+        "order"
+      ]
+    },
+    {
+      "id": "ehang-ir",
+      "market": "中国",
+      "type": "企业公告",
+      "credibility": "高",
+      "name": "亿航智能投资者关系",
+      "url": "https://ir.ehang.com/",
+      "crawlMode": "watch-page",
+      "cadenceHours": 24,
+      "keywords": [
+        "适航",
+        "商业运营",
+        "订单",
+        "无人驾驶航空器"
+      ]
+    },
+    {
+      "id": "reuters-aerospace",
+      "market": "全球",
+      "type": "主流媒体",
+      "credibility": "中高",
+      "name": "路透社航空航天频道",
+      "url": "https://www.reuters.com/business/aerospace-defense/",
+      "crawlMode": "watch-page",
+      "cadenceHours": 6,
+      "keywords": [
+        "air taxi",
+        "drone",
+        "aviation",
+        "electric aircraft"
+      ]
+    },
+    {
+      "id": "aviation-week",
+      "market": "全球",
+      "type": "行业媒体",
+      "credibility": "中高",
+      "name": "Aviation Week 航空周刊",
+      "url": "https://aviationweek.com/",
+      "crawlMode": "watch-page",
+      "cadenceHours": 12,
+      "keywords": [
+        "advanced air mobility",
+        "electric aircraft",
+        "uncrewed",
+        "drone"
+      ]
+    },
+    {
+      "id": "evtols-insights",
+      "market": "全球",
+      "type": "行业媒体",
+      "credibility": "中",
+      "name": "eVTOL Insights 行业媒体",
+      "url": "https://evtolinsights.com/",
+      "crawlMode": "watch-page",
+      "cadenceHours": 12,
+      "keywords": [
+        "eVTOL",
+        "vertiport",
+        "advanced air mobility"
+      ]
+    },
+    {
+      "id": "authorized-self-media",
+      "market": "全球",
+      "type": "自媒体观察",
+      "credibility": "待核验",
+      "name": "授权自媒体与公开订阅源",
+      "url": "about:manual-intake",
+      "crawlMode": "manual-or-api",
+      "cadenceHours": 24,
+      "keywords": [
+        "低空经济",
+        "无人机",
+        "电动垂直起降飞行器",
+        "先进空中交通"
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "source": "地方政府与发改委公开信息",
+      "type": "地方政府",
+      "message": "地方政府与发改委公开信息: HTTP 404"
+    },
+    {
+      "source": "美国联邦航空管理局",
+      "type": "官方发布",
+      "message": "美国联邦航空管理局: HTTP 403"
+    },
+    {
+      "source": "美国交通部",
+      "type": "官方发布",
+      "message": "美国交通部: HTTP 403"
+    },
+    {
+      "source": "Archer Aviation 投资者关系",
+      "type": "企业公告",
+      "message": "Archer Aviation 投资者关系: HTTP 403"
+    },
+    {
+      "source": "亿航智能投资者关系",
+      "type": "企业公告",
+      "message": "This operation was aborted"
+    },
+    {
+      "source": "路透社航空航天频道",
+      "type": "主流媒体",
+      "message": "fetch failed"
+    }
+  ]
+}
