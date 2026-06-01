@@ -8,13 +8,11 @@ import {
   ExternalLink,
   Filter,
   Globe2,
-  Newspaper,
   RadioTower,
   RotateCcw,
   Search,
   Settings2,
   ShieldCheck,
-  TrendingUp,
   X,
 } from 'lucide-react';
 import './styles.css';
@@ -31,11 +29,13 @@ import {
 const categoryOptions: Array<NewsCategory | '全部'> = ['全部', '政策', '商业化', '适航', '基建', '技术', '融资'];
 const regionOptions = ['全部', '中国', '美国', '欧洲', '中东', '东南亚', '全球'] as const;
 const sourceTypeOptions = ['全部', '官方发布', '地方政府', '企业公告', '主流媒体', '行业媒体', '自媒体观察', '研究报告'] as const;
+const feedModes = ['行业资讯', '公司', '融资与上市'] as const;
 const auditStorageKey = 'low-altitude-news-audit-v1';
 const publicUrl = (path: string) => `${import.meta.env.BASE_URL}${path}`;
 
 type DisplayNewsItem = {
   id: string | number;
+  region?: RegionKey;
   country: string;
   category: NewsCategory;
   priority: '重点跟踪' | '观察';
@@ -47,6 +47,7 @@ type DisplayNewsItem = {
   summary: string;
   source: string;
   url: string;
+  content?: string[];
 };
 
 type NewsSnapshot = {
@@ -82,6 +83,7 @@ function App() {
   const [activeRegion, setActiveRegion] = useState<RegionKey>('china');
   const [compareRegion, setCompareRegion] = useState<RegionKey>('us');
   const [category, setCategory] = useState<NewsCategory | '全部'>('全部');
+  const [feedMode, setFeedMode] = useState<(typeof feedModes)[number]>('行业资讯');
   const [priorityOnly, setPriorityOnly] = useState(true);
   const [query, setQuery] = useState('');
   const [cachedNews, setCachedNews] = useState<DisplayNewsItem[]>([]);
@@ -102,6 +104,7 @@ function App() {
         if (!snapshot?.collected?.length) return;
         setCachedNews(snapshot.collected.map((item) => ({
           id: item.id,
+          region: countryToRegionKey(item.market),
           country: item.market,
           category: item.category,
           priority: item.credibility === '待核验' || item.sourceType === '自媒体观察' ? '观察' : '重点跟踪',
@@ -113,6 +116,15 @@ function App() {
           summary: item.summary,
           source: item.source,
           url: item.url,
+          content: buildArticleContent({
+            country: item.market,
+            category: item.category,
+            sourceType: item.sourceType,
+            credibility: item.credibility,
+            title: item.title,
+            summary: item.summary,
+            source: item.source,
+          }),
         })));
       })
       .catch(() => setCachedNews([]));
@@ -134,71 +146,115 @@ function App() {
       }));
   }, [auditState, rawNews]);
 
+  const regionalNewsPool = useMemo(() => mergeNews(allNews, newsItems), [allNews]);
+
   const filteredNews = useMemo(() => {
     return allNews.filter((item) => {
       const categoryMatch = category === '全部' || item.category === category;
+      const modeMatch = feedModeMatches(item, feedMode);
       const priorityMatch = !priorityOnly || item.priority === '重点跟踪';
       const regionMatch = newsRegion === '全部' || item.country === newsRegion;
       const sourceTypeMatch = sourceType === '全部' || item.sourceType === sourceType;
       const queryMatch = [item.title, item.summary, item.country, item.source].join(' ').toLowerCase().includes(query.toLowerCase());
-      return categoryMatch && priorityMatch && regionMatch && sourceTypeMatch && queryMatch;
+      return categoryMatch && modeMatch && priorityMatch && regionMatch && sourceTypeMatch && queryMatch;
     });
-  }, [allNews, category, newsRegion, priorityOnly, query, sourceType]);
+  }, [allNews, category, feedMode, newsRegion, priorityOnly, query, sourceType]);
+
+  const regionHotNews = useMemo(() => {
+    const sameRegion = regionalNewsPool.filter((item) => itemRegionKey(item) === activeRegion);
+    const prioritySameRegion = sameRegion.filter((item) => item.priority === '重点跟踪');
+    const globalBackup = regionalNewsPool.filter((item) => item.country === '全球' && item.priority === '重点跟踪');
+    const generalBackup = regionalNewsPool.filter((item) => item.priority === '重点跟踪');
+    if (sameRegion.length) return mergeNews(prioritySameRegion, sameRegion).slice(0, 3);
+    return mergeNews(globalBackup, generalBackup).slice(0, 3);
+  }, [activeRegion, regionalNewsPool]);
+
+  const regionCounts = useMemo(() => {
+    return regions.reduce<Record<RegionKey, number>>((counts, region) => {
+      counts[region.key] = regionalNewsPool.filter((item) => itemRegionKey(item) === region.key || item.country === region.name).length;
+      return counts;
+    }, {} as Record<RegionKey, number>);
+  }, [regionalNewsPool]);
 
   return (
     <main>
-      <section className="hero">
-        <img className="heroImage" src={publicUrl('images/low-altitude-hero.png')} alt="" />
-        <div className="heroShade" />
-        <nav className="topNav">
-          <div className="brand"><RadioTower size={20} /> 全球低空经济观察站</div>
-          <div className="navPills">
-            <a href="#news">动态流</a>
-            <a href="#radar">全球雷达</a>
-            <a href="#compare">量化对比</a>
-          </div>
-        </nav>
-        <div className="heroContent">
-          <div>
-            <p className="eyebrow"><Globe2 size={16} /> 全球低空经济情报</p>
-            <h1 className="heroTitle">
-              <span>看全球<i>低空经济</i></span>
-              <span>政策、商业化</span>
-              <span>与趋势变化</span>
-            </h1>
-            <p className="heroLead">把低空空域、无人机物流、电动垂直起降飞行器、起降基础设施和资本动态放到同一个可交互视图里，先看事实线索，再做趋势判断。</p>
-            <div className="heroActions">
-              <a href="#news" className="primaryAction">查看全球动态 <Newspaper size={18} /></a>
-              <a href="#compare" className="ghostAction">国家对比 <ArrowRightLeft size={18} /></a>
-            </div>
-            <div className="heroFocus">
-              <span>政策</span>
-              <span>商业化</span>
-              <span>适航</span>
-              <span>基础设施</span>
-              <span>资本市场</span>
-            </div>
-          </div>
-          <div className="livePanel">
-            <div className="panelHeader">
-              <span>今日雷达</span>
-              <TrendingUp size={18} />
-            </div>
-            <div className="pulseGrid">
+      <nav className="topNav appNav">
+        <div className="brand"><RadioTower size={20} /> 全球低空经济观察站</div>
+        <div className="navPills">
+          <a href="#radar">全球雷达</a>
+          <a href="#news">信息流</a>
+          <a href="#compare">量化对比</a>
+        </div>
+      </nav>
+
+      <section className="radarHero" id="radar">
+        <div className="sciRadar">
+          <div className="sciCopy">
+            <p className="eyebrow"><Globe2 size={16} /> 全球低空经济雷达</p>
+            <h1><span>全球低空经济</span><i>热点扫描</i></h1>
+            <p>把地区、政策、公司和资本线索收进一个低空运行态势界面，先看信号，再进入下方资讯流。</p>
+            <div className="heroStats" aria-label="站点概览">
               <Metric label="跟踪地区" value={regions.length} suffix="个" />
               <Metric label="动态条目" value={allNews.length} suffix="条" />
-              <Metric label="参考来源" value={marketSources.length} suffix="个" />
+              <Metric label="来源口径" value={marketSources.length} suffix="类" />
+            </div>
+          </div>
+          <div className="scannerPanel">
+            <div className="scannerTop">
+              <span>Signal Radar</span>
+              <strong>{active.name} · {regionHotNews.length} 条热点</strong>
+            </div>
+            <div className="scannerBody">
+              <div className="radarDisc" aria-label="地区雷达">
+                <div className="radarSweep" />
+                <div className="radarCore" />
+                {regions.map((region, index) => (
+                  <button
+                    key={region.key}
+                    className={`radarNode node${index + 1} ${region.key === activeRegion ? 'active' : ''}`}
+                    onClick={() => setActiveRegion(region.key)}
+                    aria-label={`查看${region.name}`}
+                  >
+                    <span />
+                    <b>{region.name}</b>
+                    <small>{regionCounts[region.key] ? `${regionCounts[region.key]} 条` : '入口'}</small>
+                  </button>
+                ))}
+              </div>
+              <article className="radarReadout">
+                <p className="eyebrow">{active.label}</p>
+                <h2>{active.name}</h2>
+                <p>{active.summary}</p>
+                <div className="signalChips">
+                  {[...active.signals.slice(0, 2), ...active.risks.slice(0, 1)].map((item) => <span key={item}>{item}</span>)}
+                </div>
+              </article>
+            </div>
+            <div className="signalTicker" aria-label="当前地区重点热点">
+              <div className="miniHeader">
+                <strong>热点信号</strong>
+                <span>点击查看详情</span>
+              </div>
+              <div className="tickerItems">
+                {regionHotNews.map((item) => (
+                  <button className="hotNewsItem" key={item.id} onClick={() => setSelectedNews(item)}>
+                    <span>{item.category}</span>
+                    <b>{item.title}</b>
+                    <small>{item.source}</small>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="section" id="news">
+      <section className="section newsSection" id="news">
         <div className="sectionTitle wide">
           <div>
-            <p className="eyebrow">新闻收集</p>
-            <h2>全球动态流</h2>
-            <p className="sectionLead">优先展示和政策、适航、商业化有关的可追踪事件。</p>
+            <p className="eyebrow">信息流</p>
+            <h2>行业资讯、公司与融资动态</h2>
+            <p className="sectionLead">按阅读场景组织内容：先看行业趋势，再看公司动作和融资上市线索。</p>
           </div>
           <div className="controls">
             <label className="searchBox"><Search size={17} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索政策、企业、地区" /></label>
@@ -233,14 +289,19 @@ function App() {
             onRestoreAll={() => setAuditState(emptyAuditState)}
           />
         )}
-        <div className="tabs">
+        <div className="feedTabs">
+          {feedModes.map((mode) => (
+            <button key={mode} className={feedMode === mode ? 'selected' : ''} onClick={() => setFeedMode(mode)}>{mode}</button>
+          ))}
+        </div>
+        <div className="tabs compactTabs">
           {categoryOptions.map((option) => (
             <button key={option} className={category === option ? 'selected' : ''} onClick={() => setCategory(option)}>{option}</button>
           ))}
         </div>
         <div className="newsGrid">
-          {filteredNews.map((item, index) => (
-            <button className={`newsCard ${index === 0 ? 'featuredNews' : ''}`} onClick={() => setSelectedNews(item)} key={item.id}>
+          {filteredNews.map((item) => (
+            <button className="newsCard" onClick={() => setSelectedNews(item)} key={item.id}>
               <div className="newsMeta">
                 <span>{item.country}</span>
                 <span>{item.category}</span>
@@ -256,51 +317,22 @@ function App() {
             </button>
           ))}
         </div>
-        {!filteredNews.length && <div className="emptyState">当前筛选下没有可展示的资讯，建议放宽来源或可信度条件。</div>}
-      </section>
-
-      <section className="section mapSection" id="radar">
-        <div className="sectionTitle">
-          <div>
-            <p className="eyebrow">互动地图</p>
-            <h2>全球发展雷达</h2>
+        {feedMode === '融资与上市' && (
+          <div className="marketPulseStrip" aria-label="融资与上市观察">
+            {listedCompanySamples.map((company) => {
+              const region = regions.find((item) => item.key === company.region);
+              return (
+                <article key={company.ticker}>
+                  <span>{region?.name} · {company.ticker}</span>
+                  <h3>{company.name}</h3>
+                  <p>{company.track}</p>
+                  <strong>{formatUsdBillion(company.marketCapUsdB)}</strong>
+                </article>
+              );
+            })}
           </div>
-          <p className="sectionLead">点击地区，快速查看当前机会信号与主要风险。</p>
-        </div>
-        <div className="mapLayout">
-          <div className="worldMap">
-            <div className="globeShell">
-              <div className="globeGrid" />
-              <div className="globeGlow" />
-              {regions.map((region) => (
-                <button
-                  key={region.key}
-                  className={`mapNode ${region.key === activeRegion ? 'active' : ''}`}
-                  style={region.coordinates}
-                  onClick={() => setActiveRegion(region.key)}
-                  aria-label={`查看${region.name}`}
-                >
-                  <span>{region.name}</span>
-                </button>
-              ))}
-            </div>
-            <div className="orbitLine orbitOne" />
-            <div className="orbitLine orbitTwo" />
-          </div>
-          <article className="regionCard">
-            <div className="regionTop">
-              <div>
-                <p className="eyebrow">{active.label}</p>
-                <h3>{active.name}</h3>
-              </div>
-            </div>
-            <p>{active.summary}</p>
-            <div className="signalColumns">
-              <SignalList title="机会信号" items={active.signals} />
-              <SignalList title="风险提醒" items={active.risks} />
-            </div>
-          </article>
-        </div>
+        )}
+        {!filteredNews.length && <div className="emptyState">当前筛选下没有可展示的资讯，建议放宽分类、来源或地区条件。</div>}
       </section>
 
       <section className="section compareSection" id="compare">
@@ -500,15 +532,64 @@ function NewsDetailModal({ item, onClose }: { item: DisplayNewsItem; onClose: ()
         <div className="detailFacts">
           <div><span>发布时间</span><strong>{item.date}</strong></div>
           <div><span>来源</span><strong>{item.source}</strong></div>
-          <div><span>展示方式</span><strong>站内摘要缓存，原文保留外链</strong></div>
+          <div><span>展示方式</span><strong>站内解读，原文保留外链</strong></div>
         </div>
+        <section className="articleBody" aria-label="站内文章正文">
+          <h3>站内解读</h3>
+          {(item.content?.length ? item.content : buildArticleContent(item)).map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
+        </section>
         <div className="detailNotice">
-          本站仅保存摘要、来源和链接，不搬运外站全文；自媒体和行业媒体内容建议结合官方或企业公告交叉核验。
+          以上为本站基于公开标题、摘要和来源信息整理的原创解读，不搬运外站全文；自媒体和行业媒体内容建议结合官方或企业公告交叉核验。
         </div>
         <a className="primaryAction detailLink" href={item.url} target="_blank" rel="noreferrer">查看原文 <ExternalLink size={17} /></a>
       </article>
     </div>
   );
+}
+
+function buildArticleContent(item: Pick<DisplayNewsItem, 'country' | 'category' | 'sourceType' | 'credibility' | 'title' | 'summary' | 'source'>) {
+  const regionLead = item.country === '全球' ? '全球市场' : `${item.country}市场`;
+  const credibilityNote = item.credibility === '待核验'
+    ? '这类线索目前仍需要结合官方公告、企业披露或更多媒体报道交叉确认。'
+    : '这类线索的参考价值相对更高，但仍需要结合发布时间、统计口径和后续执行进展一起判断。';
+
+  return [
+    `${item.title}，核心看点并不只是单条新闻本身，而是它放在${regionLead}低空经济进程里释放出的信号。${item.summary}`,
+    `从分类上看，这条动态属于“${item.category}”，来源类型为“${item.sourceType}”。对低空经济来说，这类信息通常会影响产业链预期、企业商业化节奏，以及地方政府或监管机构接下来的资源投入方向。`,
+    `如果把它放进更长的时间线里观察，值得关注的不是短期热度，而是后续是否出现更具体的落地动作。比如政策是否变成试点项目，企业公告是否变成真实订单，基础设施规划是否进入招标、建设或运营阶段。`,
+    `对投资者、产业从业者和城市运营方来说，这条信息更适合作为观察入口，而不是单独作为判断依据。可以继续跟踪同一来源“${item.source}”的后续更新，也可以和监管部门、企业公告、地方公开文件进行对照。`,
+    credibilityNote,
+  ];
+}
+
+function itemRegionKey(item: DisplayNewsItem) {
+  return item.region ?? countryToRegionKey(item.country);
+}
+
+function countryToRegionKey(country: string): RegionKey | undefined {
+  const normalized = country.toLowerCase();
+  if (country.includes('中国') || normalized.includes('china')) return 'china';
+  if (country.includes('美国') || normalized.includes('united states') || normalized.includes('usa') || normalized.includes('us')) return 'us';
+  if (country.includes('欧洲') || normalized.includes('europe')) return 'europe';
+  if (country.includes('中东') || normalized.includes('dubai') || normalized.includes('saudi') || normalized.includes('uae')) return 'middleEast';
+  if (country.includes('东南亚') || normalized.includes('singapore') || normalized.includes('indonesia') || normalized.includes('thailand')) return 'southEastAsia';
+  return undefined;
+}
+
+function feedModeMatches(item: DisplayNewsItem, mode: (typeof feedModes)[number]) {
+  const text = `${item.title} ${item.summary} ${item.source} ${item.sourceType}`.toLowerCase();
+  if (mode === '公司') {
+    return item.sourceType === '企业公告'
+      || item.category === '商业化'
+      || ['joby', 'archer', '亿航', 'ehang', '峰飞', '小鹏', 'volocopter', 'everdrone'].some((keyword) => text.includes(keyword));
+  }
+  if (mode === '融资与上市') {
+    return item.category === '融资'
+      || ['ipo', '上市', '融资', '市值', 'investor', 'funding', 'capital'].some((keyword) => text.includes(keyword));
+  }
+  return item.category !== '融资';
 }
 
 function formatUsdBillion(value: number) {
@@ -564,6 +645,16 @@ function loadAuditState(): AuditState {
 
 function unique(values: string[]) {
   return [...new Set(values)];
+}
+
+function mergeNews(...groups: DisplayNewsItem[][]) {
+  const seen = new Set<string>();
+  return groups.flat().filter((item) => {
+    const key = String(item.id);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 createRoot(document.getElementById('root')!).render(<App />);

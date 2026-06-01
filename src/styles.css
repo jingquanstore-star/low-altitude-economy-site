@@ -35,8 +35,8 @@ a {
 main {
   min-height: 100vh;
   background:
-    linear-gradient(180deg, #edf3f4 0%, #f8faf7 38%, #eef3f1 100%),
-    repeating-linear-gradient(90deg, rgba(23, 32, 41, 0.03) 0 1px, transparent 1px 80px);
+    radial-gradient(circle at 74% 5%, rgba(154, 214, 226, 0.28), transparent 28%),
+    linear-gradient(180deg, #f4fbfb 0%, #fbfcf9 42%, #eef5f2 100%);
 }
 
 .hero {
@@ -80,6 +80,11 @@ main {
   padding: 28px 0;
 }
 
+.appNav {
+  padding: 16px 0 8px;
+  color: #1c3034;
+}
+
 .brand,
 .eyebrow,
 .newsFooter,
@@ -116,6 +121,863 @@ main {
 
 .navPills a {
   backdrop-filter: blur(10px);
+}
+
+.appNav .navPills a {
+  border-color: rgba(30, 88, 94, 0.14);
+  background: rgba(255, 255, 255, 0.74);
+  color: #34575b;
+}
+
+.radarHero {
+  position: relative;
+  z-index: 1;
+  width: min(1180px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 14px 0 34px;
+}
+
+.sciRadar {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(300px, 0.72fr) minmax(0, 1.28fr);
+  gap: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(56, 132, 139, 0.18);
+  border-radius: 14px;
+  padding: 20px;
+  background:
+    linear-gradient(135deg, rgba(248, 252, 250, 0.96), rgba(226, 242, 242, 0.86)),
+    radial-gradient(circle at 72% 24%, rgba(215, 243, 107, 0.16), transparent 28%);
+  box-shadow: 0 28px 76px rgba(28, 58, 62, 0.1);
+}
+
+.sciRadar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(20, 122, 131, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20, 122, 131, 0.05) 1px, transparent 1px);
+  background-size: 34px 34px;
+  mask-image: linear-gradient(90deg, transparent 0%, #000 18%, #000 100%);
+}
+
+.sciRadar::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -30%;
+  width: 54%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #147a83, #d7f36b 46%, transparent);
+  animation: panelScan 4.8s ease-in-out infinite;
+}
+
+.sciCopy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 420px;
+}
+
+.sciCopy h1 {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 14px;
+  color: #13282d;
+  font-size: clamp(2.55rem, 4.8vw, 4.2rem);
+  line-height: 1.02;
+  letter-spacing: 0;
+}
+
+.sciCopy h1 i {
+  color: #147a83;
+  font-style: normal;
+  text-shadow: 0 0 28px rgba(20, 122, 131, 0.14);
+}
+
+.sciCopy > p:not(.eyebrow) {
+  max-width: 520px;
+  color: #52676b;
+  font-size: 1rem;
+  line-height: 1.76;
+}
+
+.scannerPanel {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  border: 1px solid rgba(21, 75, 82, 0.18);
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 42% 48%, rgba(39, 139, 148, 0.28), transparent 28%),
+    linear-gradient(135deg, #102c32, #173f45 58%, #eff8f2 180%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 18px 44px rgba(16, 44, 50, 0.16);
+}
+
+.scannerPanel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, transparent 0 48%, rgba(215, 243, 107, 0.08) 50%, transparent 52%),
+    linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+  background-size: 100% 52px, 180% 100%;
+  mix-blend-mode: screen;
+  opacity: 0.55;
+  animation: scannerLines 6s linear infinite;
+}
+
+.scannerTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(229, 249, 242, 0.12);
+  color: rgba(238, 251, 249, 0.68);
+  font-size: 0.8rem;
+  letter-spacing: 0;
+}
+
+.scannerTop strong {
+  color: #d7f36b;
+  font-weight: 760;
+}
+
+.scannerBody {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 14px;
+  padding: 16px;
+}
+
+.radarDisc {
+  position: relative;
+  min-height: 310px;
+  overflow: hidden;
+  border: 1px solid rgba(222, 249, 242, 0.12);
+  border-radius: 10px;
+  background:
+    radial-gradient(circle at center, transparent 0 14%, rgba(215, 243, 107, 0.08) 14.5% 15%, transparent 15.5% 30%, rgba(134, 214, 222, 0.12) 30.5% 31%, transparent 31.5% 47%, rgba(134, 214, 222, 0.09) 47.5% 48%, transparent 48.5%),
+    linear-gradient(rgba(229, 249, 242, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(229, 249, 242, 0.06) 1px, transparent 1px);
+  background-size: auto, 34px 34px, 34px 34px;
+}
+
+.radarDisc > * {
+  position: relative;
+}
+
+.radarDisc::before,
+.radarDisc::after {
+  content: "";
+  position: absolute;
+  inset: 12%;
+  border-radius: 50%;
+  border: 1px solid rgba(222, 249, 242, 0.18);
+  pointer-events: none;
+}
+
+.radarDisc::after {
+  inset: 28%;
+  border-color: rgba(215, 243, 107, 0.2);
+}
+
+.radarSweep {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 48%;
+  height: 48%;
+  transform-origin: 0 0;
+  background: linear-gradient(35deg, rgba(215, 243, 107, 0.34), rgba(72, 198, 206, 0.1) 42%, transparent 68%);
+  clip-path: polygon(0 0, 100% 10%, 100% 52%, 0 0);
+  animation: sweepRadar 4.8s linear infinite;
+  filter: blur(0.2px);
+}
+
+.radarCore {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #d7f36b;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 8px rgba(215, 243, 107, 0.12), 0 0 30px rgba(215, 243, 107, 0.3);
+  animation: corePulse 2.2s ease-in-out infinite;
+}
+
+.radarNode {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  gap: 3px;
+  min-width: 86px;
+  border: 1px solid rgba(229, 249, 242, 0.14);
+  border-radius: 8px;
+  padding: 8px 9px;
+  background: rgba(10, 32, 38, 0.72);
+  color: rgba(245, 252, 249, 0.84);
+  text-align: left;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  animation: nodeFloat 4.6s ease-in-out infinite;
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+}
+
+.radarNode:hover {
+  transform: translateY(-5px) scale(1.02);
+  border-color: rgba(215, 243, 107, 0.5);
+  box-shadow: 0 14px 30px rgba(3, 16, 20, 0.25);
+}
+
+.radarNode.active {
+  border-color: rgba(215, 243, 107, 0.62);
+  background: rgba(215, 243, 107, 0.13);
+  box-shadow: 0 0 0 1px rgba(215, 243, 107, 0.12), 0 0 0 6px rgba(215, 243, 107, 0.08), 0 20px 42px rgba(3, 16, 20, 0.3);
+}
+
+.radarNode span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #77d5de;
+  box-shadow: 0 0 14px rgba(119, 213, 222, 0.7);
+}
+
+.radarNode.active span {
+  background: #d7f36b;
+  box-shadow: 0 0 18px rgba(215, 243, 107, 0.8);
+}
+
+.radarNode.active span::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1px solid rgba(215, 243, 107, 0.45);
+  animation: pulseRing 1.7s ease-out infinite;
+}
+
+.radarNode b {
+  font-size: 0.9rem;
+}
+
+.radarNode small {
+  color: rgba(238, 251, 249, 0.58);
+}
+
+.node1 {
+  left: 64%;
+  top: 44%;
+}
+
+.node2 {
+  left: 12%;
+  top: 28%;
+  animation-delay: -1s;
+}
+
+.node3 {
+  left: 43%;
+  top: 18%;
+  animation-delay: -2.2s;
+}
+
+.node4 {
+  left: 50%;
+  top: 58%;
+  animation-delay: -3s;
+}
+
+.node5 {
+  left: 68%;
+  top: 70%;
+  animation-delay: -1.7s;
+}
+
+.radarReadout {
+  align-self: stretch;
+  border: 1px solid rgba(229, 249, 242, 0.12);
+  border-radius: 10px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.07);
+  transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+}
+
+.radarReadout:hover {
+  transform: translateY(-2px);
+  border-color: rgba(215, 243, 107, 0.22);
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.radarReadout .eyebrow {
+  color: #9ee3dc;
+}
+
+.radarReadout h2 {
+  margin-bottom: 10px;
+  color: #f7fbf7;
+  font-size: clamp(1.7rem, 2.6vw, 2.35rem);
+  line-height: 1.08;
+}
+
+.radarReadout p {
+  color: rgba(238, 251, 249, 0.72);
+  font-size: 0.92rem;
+  line-height: 1.72;
+}
+
+.scannerPanel .signalChips span {
+  background: rgba(215, 243, 107, 0.1);
+  color: rgba(247, 251, 247, 0.82);
+}
+
+.signalTicker {
+  padding: 0 16px 16px;
+}
+
+.signalTicker .miniHeader {
+  color: rgba(238, 251, 249, 0.62);
+  margin-bottom: 9px;
+}
+
+.signalTicker .miniHeader strong {
+  color: #f7fbf7;
+}
+
+.tickerItems {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.tickerItems .hotNewsItem {
+  border-color: rgba(229, 249, 242, 0.12);
+  background: rgba(255, 255, 255, 0.08);
+  animation: riseIn 420ms ease both;
+}
+
+.tickerItems .hotNewsItem:nth-child(2) {
+  animation-delay: 80ms;
+}
+
+.tickerItems .hotNewsItem:nth-child(3) {
+  animation-delay: 150ms;
+}
+
+.tickerItems .hotNewsItem:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-4px);
+}
+
+.tickerItems .hotNewsItem b {
+  color: #f7fbf7;
+}
+
+.tickerItems .hotNewsItem small {
+  color: rgba(238, 251, 249, 0.54);
+}
+
+.radarSurface {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(26, 71, 76, 0.12);
+  border-radius: 14px;
+  padding: 18px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(241, 249, 248, 0.9)),
+    radial-gradient(circle at 82% 0%, rgba(135, 205, 215, 0.2), transparent 28%);
+  box-shadow: 0 28px 76px rgba(28, 58, 62, 0.09);
+}
+
+.radarSurface::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: linear-gradient(90deg, #147a83, #d7f36b 54%, transparent);
+}
+
+.radarSurface::after {
+  content: "";
+  position: absolute;
+  inset: auto 18px 18px auto;
+  width: 180px;
+  height: 88px;
+  border-right: 1px solid rgba(20, 122, 131, 0.12);
+  border-bottom: 1px solid rgba(20, 122, 131, 0.12);
+  border-radius: 0 0 14px 0;
+  pointer-events: none;
+}
+
+.radarCompactHeader {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 26px;
+  align-items: start;
+  margin-bottom: 14px;
+}
+
+.radarIntro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 26px;
+  align-items: start;
+  margin-bottom: 16px;
+}
+
+.radarIntro h1 {
+  display: grid;
+  gap: 4px;
+  max-width: 700px;
+  margin-bottom: 12px;
+  color: #13282d;
+  font-size: clamp(2.45rem, 4.4vw, 4.05rem);
+  line-height: 1.02;
+  letter-spacing: 0;
+}
+
+.radarCompactHeader h1 {
+  display: grid;
+  gap: 4px;
+  max-width: 700px;
+  margin-bottom: 12px;
+  color: #13282d;
+  font-size: clamp(2rem, 3.6vw, 3.15rem);
+  line-height: 1.02;
+  letter-spacing: 0;
+}
+
+.radarIntro h1 i,
+.radarCompactHeader h1 i {
+  color: #147a83;
+  font-style: normal;
+}
+
+.radarIntro > p:not(.eyebrow) {
+  max-width: 660px;
+  color: #52676b;
+  font-size: 1.04rem;
+  line-height: 1.82;
+}
+
+.heroCopy > p:not(.eyebrow) {
+  max-width: 620px;
+  margin-bottom: 0;
+  color: #52676b;
+  font-size: 0.98rem;
+  line-height: 1.72;
+}
+
+.regionRail {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.regionRail button {
+  min-height: 36px;
+  border: 1px solid rgba(29, 91, 97, 0.12);
+  border-radius: 999px;
+  padding: 0 13px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #31575b;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.regionRail button:hover {
+  transform: translateY(-2px);
+  border-color: rgba(20, 122, 131, 0.24);
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(23, 54, 58, 0.08);
+}
+
+.regionRail button.selected {
+  border-color: rgba(20, 122, 131, 0.34);
+  background: #14383d;
+  color: #f7fbf7;
+}
+
+.heroStats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.heroStats .metricTile {
+  display: grid;
+  gap: 8px;
+  min-height: 66px;
+  align-content: center;
+  border: 1px solid rgba(28, 52, 54, 0.1);
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.heroStats .metricTile span {
+  color: #6d7d80;
+}
+
+.heroStats .metricTile strong {
+  color: #163b40;
+}
+
+.regionCards {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.regionCards button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  border: 1px solid rgba(29, 91, 97, 0.12);
+  border-radius: 10px;
+  padding: 0 14px;
+  background: rgba(255, 255, 255, 0.76);
+  color: #29484c;
+  cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.regionCards button:hover {
+  transform: translateY(-2px);
+  border-color: rgba(20, 122, 131, 0.24);
+  background: #fff;
+  box-shadow: 0 14px 30px rgba(23, 54, 58, 0.08);
+}
+
+.regionCards button.selected {
+  border-color: rgba(20, 122, 131, 0.34);
+  background: #14383d;
+  color: #f7fbf7;
+}
+
+.regionCards strong {
+  font-size: 1rem;
+}
+
+.regionCards span {
+  color: inherit;
+  opacity: 0.7;
+  font-size: 0.78rem;
+}
+
+.radarCompactBody {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.38fr);
+  gap: 14px;
+}
+
+.regionBrief,
+.hotPanel {
+  border: 1px solid rgba(28, 52, 54, 0.1);
+  border-radius: 10px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.regionBriefTitle {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.regionBriefTitle h2 {
+  margin-bottom: 0;
+  color: #13282d;
+  font-size: clamp(1.55rem, 2.2vw, 2.05rem);
+  line-height: 1.08;
+}
+
+.regionBriefTitle span {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 6px 9px;
+  background: #e6f4f2;
+  color: #247078;
+  font-size: 0.78rem;
+  font-weight: 760;
+}
+
+.regionBrief > p {
+  margin-bottom: 12px;
+  color: #52676b;
+  font-size: 0.92rem;
+  line-height: 1.68;
+}
+
+.signalChips {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.signalChips span {
+  border-radius: 999px;
+  padding: 6px 8px;
+  background: #f1f7f5;
+  color: #426267;
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.compactSignals {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.compactHotList {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.airspaceDashboard {
+  display: grid;
+  grid-template-columns: minmax(0, 1.28fr) minmax(350px, 0.78fr);
+  gap: 16px;
+  min-width: 0;
+}
+
+.airspaceMap {
+  position: relative;
+  min-height: 410px;
+  overflow: hidden;
+  border: 1px solid rgba(26, 71, 76, 0.12);
+  border-radius: 10px;
+  background:
+    radial-gradient(circle at 76% 22%, rgba(215, 243, 107, 0.14), transparent 22%),
+    linear-gradient(135deg, rgba(236, 248, 248, 0.98), rgba(248, 251, 247, 0.96));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.66);
+}
+
+.airspaceMap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.42), transparent 38%, rgba(20, 122, 131, 0.08));
+}
+
+.mapToolbar {
+  position: absolute;
+  z-index: 3;
+  top: 18px;
+  left: 18px;
+  right: 18px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: #5f7275;
+  font-size: 0.82rem;
+}
+
+.mapToolbar strong {
+  color: #17363a;
+}
+
+.airspaceMap svg {
+  position: absolute;
+  inset: 62px 24px 24px;
+  width: calc(100% - 48px);
+  height: calc(100% - 86px);
+}
+
+.mapLand {
+  fill: url("#mapLand");
+  stroke: rgba(42, 91, 96, 0.18);
+  stroke-width: 1.2;
+  filter: drop-shadow(0 12px 18px rgba(42, 82, 84, 0.08));
+}
+
+.mapLand.soft {
+  opacity: 0.74;
+}
+
+.mapRoute {
+  fill: none;
+  stroke: url("#mapRoute");
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-dasharray: 8 12;
+  animation: routeFlow 5.5s linear infinite;
+}
+
+.routeTwo {
+  animation-duration: 7s;
+  opacity: 0.74;
+}
+
+.routeThree {
+  animation-duration: 6.2s;
+  opacity: 0.6;
+}
+
+.mapGridOverlay {
+  position: absolute;
+  inset: 62px 24px 24px;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(42, 91, 96, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(42, 91, 96, 0.06) 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+
+.mapHotspot {
+  position: absolute;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(29, 91, 97, 0.14);
+  border-radius: 999px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.86);
+  color: #244448;
+  box-shadow: 0 10px 24px rgba(23, 54, 58, 0.08);
+  cursor: pointer;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.mapHotspot:hover {
+  transform: translate(-50%, -54%);
+  border-color: rgba(20, 122, 131, 0.36);
+  background: #fff;
+  box-shadow: 0 18px 34px rgba(23, 54, 58, 0.14);
+}
+
+.mapHotspot.active {
+  border-color: rgba(20, 122, 131, 0.42);
+  background: #14383d;
+  color: #f7fbf7;
+}
+
+.hotspotDot {
+  position: relative;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #147a83;
+}
+
+.mapHotspot.active .hotspotDot {
+  background: #d7f36b;
+}
+
+.mapHotspot.active .hotspotDot::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1px solid rgba(215, 243, 107, 0.56);
+  animation: pulseRing 1.8s ease-out infinite;
+}
+
+.mapHotspot b {
+  font-size: 0.82rem;
+  line-height: 1;
+}
+
+.radarRegionCard {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.regionTop h2 {
+  margin-bottom: 0;
+  color: #13282d;
+  font-size: clamp(2rem, 3vw, 2.7rem);
+  line-height: 1.08;
+}
+
+.regionHotList {
+  display: grid;
+  gap: 8px;
+  margin: 4px 0 14px;
+}
+
+.miniHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #5f7275;
+  font-size: 0.84rem;
+}
+
+.miniHeader strong {
+  color: #17363a;
+}
+
+.hotNewsItem {
+  display: grid;
+  gap: 5px;
+  width: 100%;
+  border: 1px solid rgba(28, 52, 54, 0.1);
+  border-radius: 8px;
+  padding: 12px;
+  background: #f7faf8;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.hotNewsItem:hover {
+  transform: translateX(4px);
+  border-color: rgba(20, 122, 131, 0.26);
+  background: #fff;
+  box-shadow: 0 12px 26px rgba(23, 54, 58, 0.08);
+}
+
+.hotNewsItem span {
+  width: max-content;
+  border-radius: 999px;
+  padding: 4px 7px;
+  background: #e6f4f2;
+  color: #247078;
+  font-size: 0.72rem;
+  font-weight: 760;
+}
+
+.hotNewsItem b {
+  color: #173035;
+  font-size: 0.92rem;
+  line-height: 1.42;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.hotNewsItem small {
+  color: #728185;
+  line-height: 1.35;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
 }
 
 .heroContent {
@@ -290,6 +1152,10 @@ p {
 
 .section {
   padding: 76px 0 0;
+}
+
+.newsSection {
+  padding-top: 52px;
 }
 
 .sectionTitle {
@@ -719,6 +1585,60 @@ ul {
   margin-bottom: 16px;
 }
 
+.feedTabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.feedTabs button {
+  position: relative;
+  min-height: 54px;
+  border: 1px solid rgba(28, 52, 54, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.8);
+  color: #254044;
+  font-weight: 760;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, color 180ms ease, box-shadow 180ms ease;
+}
+
+.feedTabs button::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 9px;
+  height: 2px;
+  border-radius: 999px;
+  background: #d7f36b;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 180ms ease;
+}
+
+.feedTabs button:hover {
+  transform: translateY(-2px);
+  border-color: rgba(20, 122, 131, 0.2);
+  box-shadow: 0 14px 32px rgba(23, 54, 58, 0.08);
+}
+
+.feedTabs button.selected {
+  border-color: rgba(20, 122, 131, 0.28);
+  background: #15383e;
+  color: #f7fbf7;
+}
+
+.feedTabs button.selected::after {
+  transform: scaleX(1);
+}
+
+.compactTabs {
+  margin-bottom: 20px;
+}
+
 .tabs button {
   background: #fff;
   color: #223235;
@@ -730,11 +1650,12 @@ ul {
 
 .newsGrid {
   display: grid;
-  grid-template-columns: 1.04fr 1fr 1fr;
-  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
 }
 
 .newsCard {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-height: 238px;
@@ -742,42 +1663,76 @@ ul {
   border: 1px solid rgba(28, 52, 54, 0.12);
   text-align: left;
   cursor: pointer;
-  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+  overflow: hidden;
+  isolation: isolate;
+  transform: translate3d(0, 0, 0);
+  transition:
+    transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 280ms ease,
+    border-color 280ms ease,
+    background 280ms ease;
+  will-change: transform;
+}
+
+.newsCard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(110deg, rgba(83, 197, 209, 0.14), transparent 30%),
+    radial-gradient(circle at 82% 16%, rgba(215, 243, 107, 0.16), transparent 32%);
+  opacity: 0;
+  z-index: 0;
+  transition: opacity 280ms ease;
+}
+
+.newsCard > * {
+  position: relative;
+  z-index: 1;
 }
 
 .newsCard:hover,
 .compareCard:hover,
 .sourceCard:hover {
-  transform: translateY(-2px);
+  transform: translate3d(0, -6px, 0);
   border-color: rgba(30, 119, 123, 0.24);
-  box-shadow: 0 22px 54px rgba(27, 45, 45, 0.1);
+  box-shadow: 0 24px 58px rgba(27, 45, 45, 0.13);
+}
+
+.newsCard:hover::before {
+  opacity: 1;
+}
+
+.newsCard:active {
+  transform: translate3d(0, -2px, 0);
 }
 
 .featuredNews {
-  grid-row: span 2;
-  min-height: 490px;
+  grid-row: auto;
+  min-height: 238px;
   background:
-    linear-gradient(180deg, rgba(23, 54, 58, 0.94), rgba(23, 54, 58, 0.86)),
-    radial-gradient(circle at top right, rgba(215, 243, 107, 0.2), transparent 36%);
-  color: #f7fbf7;
+    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(248, 252, 250, 0.88)),
+    radial-gradient(circle at top right, rgba(151, 217, 226, 0.16), transparent 40%);
+  color: var(--text-strong);
 }
 
 .featuredNews .newsMeta span {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.16);
-  color: rgba(247, 251, 247, 0.86);
+  background: #eef4f2;
+  border-color: rgba(27, 53, 56, 0.1);
+  color: #355357;
 }
 
 .newsGrid .featuredNews h3 {
-  margin-top: clamp(40px, 6vw, 72px);
-  color: #f7fbf7;
-  font-size: clamp(1.38rem, 2vw, 1.62rem);
-  line-height: 1.35;
+  margin-top: 0;
+  color: var(--text-strong);
+  font-size: 1.04rem;
+  line-height: 1.46;
 }
 
 .featuredNews p,
 .featuredNews .newsFooter {
-  color: rgba(247, 251, 247, 0.78);
+  color: #657275;
 }
 
 .newsMeta {
@@ -817,6 +1772,53 @@ ul {
   color: #657275;
   font-size: 0.76rem;
   line-height: 1.45;
+}
+
+.marketPulseStrip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.marketPulseStrip article {
+  border: 1px solid rgba(28, 52, 54, 0.1);
+  border-radius: 8px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.82);
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.marketPulseStrip article:hover {
+  transform: translateY(-3px);
+  border-color: rgba(20, 122, 131, 0.22);
+  box-shadow: 0 16px 36px rgba(23, 54, 58, 0.08);
+}
+
+.marketPulseStrip span {
+  color: #6a7b7e;
+  font-size: 0.76rem;
+  font-weight: 680;
+}
+
+.marketPulseStrip h3 {
+  margin: 8px 0 5px;
+  color: #172329;
+  font-size: 1.02rem;
+  line-height: 1.35;
+}
+
+.marketPulseStrip p {
+  min-height: 46px;
+  margin-bottom: 10px;
+  color: #536367;
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+
+.marketPulseStrip strong {
+  color: #147a83;
+  font-size: 1.12rem;
 }
 
 .emptyState {
@@ -1087,6 +2089,26 @@ select {
   line-height: 1.82;
 }
 
+.articleBody {
+  margin: 8px 0 22px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(28, 52, 54, 0.1);
+}
+
+.articleBody h3 {
+  margin: 12px 0 14px;
+  color: #172029;
+  font-size: 1.12rem;
+  line-height: 1.35;
+}
+
+.articleBody p {
+  margin-bottom: 14px;
+  color: #384f53;
+  font-size: 1rem;
+  line-height: 1.9;
+}
+
 .detailFacts {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1126,9 +2148,127 @@ select {
   width: max-content;
 }
 
+@keyframes routeFlow {
+  from {
+    stroke-dashoffset: 0;
+  }
+
+  to {
+    stroke-dashoffset: -120;
+  }
+}
+
+@keyframes pulseRing {
+  from {
+    opacity: 0.9;
+    transform: scale(0.72);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(1.7);
+  }
+}
+
+@keyframes sweepRadar {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes panelScan {
+  0%,
+  18% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+
+  38% {
+    opacity: 1;
+  }
+
+  76%,
+  100% {
+    transform: translateX(260%);
+    opacity: 0;
+  }
+}
+
+@keyframes scannerLines {
+  from {
+    background-position: 0 -80px, 0 0;
+  }
+
+  to {
+    background-position: 0 180px, 180% 0;
+  }
+}
+
+@keyframes corePulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 8px rgba(215, 243, 107, 0.12), 0 0 30px rgba(215, 243, 107, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 0 15px rgba(215, 243, 107, 0.06), 0 0 42px rgba(215, 243, 107, 0.42);
+  }
+}
+
+@keyframes nodeFloat {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+
+  50% {
+    translate: 0 -4px;
+  }
+}
+
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (max-width: 920px) {
+  .sciRadar,
+  .scannerBody {
+    grid-template-columns: 1fr;
+  }
+
+  .sciCopy {
+    min-height: auto;
+  }
+
+  .sciCopy .heroStats {
+    margin-top: 20px;
+  }
+
+  .radarDisc {
+    min-height: 300px;
+  }
+
+  .tickerItems {
+    grid-template-columns: 1fr;
+  }
+
   .heroContent,
-  .mapLayout {
+  .mapLayout,
+  .radarIntro,
+  .radarCompactHeader,
+  .airspaceDashboard {
     grid-template-columns: 1fr;
   }
 
@@ -1139,6 +2279,23 @@ select {
 
   .livePanel {
     max-width: 460px;
+  }
+
+  .heroStats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .regionCards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .radarCompactBody,
+  .compactHotList {
+    grid-template-columns: 1fr;
+  }
+
+  .airspaceMap {
+    min-height: 390px;
   }
 
   .newsGrid,
@@ -1167,7 +2324,7 @@ select {
 
   .featuredNews {
     grid-row: auto;
-    min-height: 300px;
+    min-height: 238px;
   }
 
   .sectionTitle,
@@ -1178,6 +2335,88 @@ select {
 }
 
 @media (max-width: 640px) {
+  .sciRadar {
+    padding: 15px;
+  }
+
+  .sciCopy h1 {
+    font-size: clamp(1.96rem, 9vw, 2.72rem);
+  }
+
+  .sciCopy > p:not(.eyebrow) {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .scannerTop {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .scannerBody {
+    padding: 12px;
+  }
+
+  .radarDisc {
+    min-height: 235px;
+  }
+
+  .radarNode {
+    min-width: 72px;
+    padding: 7px;
+    animation: none;
+  }
+
+  .radarNode b {
+    font-size: 0.8rem;
+  }
+
+  .radarNode small {
+    display: none;
+  }
+
+  .radarReadout p {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+
+  .scannerPanel .signalChips {
+    display: none;
+  }
+
+  .signalTicker {
+    padding: 0 12px 12px;
+  }
+
+  .tickerItems {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+
+  .tickerItems .hotNewsItem {
+    flex: 0 0 220px;
+  }
+
+  .node1 {
+    left: 58%;
+    top: 43%;
+  }
+
+  .node2 {
+    left: 8%;
+    top: 30%;
+  }
+
+  .node3 {
+    left: 39%;
+    top: 16%;
+  }
+
   .topNav {
     align-items: flex-start;
     flex-direction: column;
@@ -1186,6 +2425,7 @@ select {
 
   .topNav,
   .heroContent,
+  .radarHero,
   .section {
     width: min(100% - 28px, 1180px);
   }
@@ -1207,8 +2447,114 @@ select {
   .newsGrid,
   .sourceGrid,
   .compareGrid,
-  .signalColumns {
+  .signalColumns,
+  .feedTabs,
+  .marketPulseStrip,
+  .compactSignals {
     grid-template-columns: 1fr;
+  }
+
+  .radarIntro h1 {
+    font-size: clamp(2.35rem, 11vw, 3.5rem);
+  }
+
+  .radarCompactHeader h1 {
+    font-size: clamp(1.78rem, 8vw, 2.55rem);
+  }
+
+  .heroStats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .heroStats .metricTile {
+    min-height: 54px;
+    padding: 10px 8px;
+  }
+
+  .heroStats .metricTile span {
+    font-size: 0.72rem;
+  }
+
+  .heroStats .metricTile strong {
+    font-size: 1.18rem;
+  }
+
+  .regionCards {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+
+  .regionCards button {
+    flex: 0 0 132px;
+  }
+
+  .radarCompactBody {
+    grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+    gap: 10px;
+  }
+
+  .regionBrief,
+  .hotPanel {
+    padding: 12px;
+  }
+
+  .regionBriefTitle {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .regionBriefTitle h2 {
+    font-size: 1.38rem;
+  }
+
+  .regionBriefTitle span {
+    display: none;
+  }
+
+  .regionBrief > p {
+    display: -webkit-box;
+    overflow: hidden;
+    margin-bottom: 0;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+  }
+
+  .signalChips {
+    display: none;
+  }
+
+  .compactHotList {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .hotNewsItem {
+    padding: 9px;
+  }
+
+  .hotNewsItem small {
+    display: none;
+  }
+
+  .airspaceMap {
+    min-height: 340px;
+  }
+
+  .radarSurface {
+    padding: 16px;
+  }
+
+  .airspaceMap svg,
+  .mapGridOverlay {
+    inset: 56px 12px 18px;
+    width: calc(100% - 24px);
+    height: calc(100% - 74px);
+  }
+
+  .mapHotspot {
+    padding: 7px 8px;
   }
 
   .quantTiles,
