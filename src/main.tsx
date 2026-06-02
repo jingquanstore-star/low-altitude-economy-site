@@ -31,6 +31,7 @@ const regionOptions = ['全部', '中国', '美国', '欧洲', '中东', '东南
 const sourceTypeOptions = ['全部', '官方发布', '地方政府', '企业公告', '主流媒体', '行业媒体', '自媒体观察', '研究报告'] as const;
 const feedModes = ['行业资讯', '公司', '融资与上市'] as const;
 const auditStorageKey = 'low-altitude-news-audit-v1';
+const newsPageSize = 9;
 const publicUrl = (path: string) => `${import.meta.env.BASE_URL}${path}`;
 
 type DisplayNewsItem = {
@@ -90,8 +91,9 @@ function App() {
   const [newsRegion, setNewsRegion] = useState<(typeof regionOptions)[number]>('全部');
   const [sourceType, setSourceType] = useState<(typeof sourceTypeOptions)[number]>('全部');
   const [selectedNews, setSelectedNews] = useState<DisplayNewsItem | null>(null);
-  const [showAuditPanel, setShowAuditPanel] = useState(false);
+  const [newsPage, setNewsPage] = useState(1);
   const [auditState, setAuditState] = useState<AuditState>(() => loadAuditState());
+  const [appRoute, setAppRoute] = useState(() => getAppRoute());
 
   const active = regions.find((region) => region.key === activeRegion) ?? regions[0];
   const compare = regions.find((region) => region.key === compareRegion) ?? regions[1];
@@ -134,7 +136,13 @@ function App() {
     window.localStorage?.setItem(auditStorageKey, JSON.stringify(auditState));
   }, [auditState]);
 
-  const rawNews: DisplayNewsItem[] = cachedNews.length ? cachedNews : newsItems;
+  useEffect(() => {
+    const onHashChange = () => setAppRoute(getAppRoute());
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
+
+  const rawNews: DisplayNewsItem[] = useMemo(() => mergeNews(newsItems, cachedNews), [cachedNews]);
   const allNews: DisplayNewsItem[] = useMemo(() => {
     return rawNews
       .filter((item) => !auditState.hiddenIds.includes(String(item.id)))
@@ -160,6 +168,15 @@ function App() {
     });
   }, [allNews, category, feedMode, newsRegion, priorityOnly, query, sourceType]);
 
+  useEffect(() => {
+    setNewsPage(1);
+  }, [category, feedMode, newsRegion, priorityOnly, query, sourceType]);
+
+  const totalNewsPages = Math.max(1, Math.ceil(filteredNews.length / newsPageSize));
+  const currentNewsPage = Math.min(newsPage, totalNewsPages);
+  const visibleNews = filteredNews.slice((currentNewsPage - 1) * newsPageSize, currentNewsPage * newsPageSize);
+  const paginationPages = getPaginationPages(currentNewsPage, totalNewsPages);
+
   const regionHotNews = useMemo(() => {
     const sameRegion = regionalNewsPool.filter((item) => itemRegionKey(item) === activeRegion);
     const prioritySameRegion = sameRegion.filter((item) => item.priority === '重点跟踪');
@@ -176,6 +193,22 @@ function App() {
     }, {} as Record<RegionKey, number>);
   }, [regionalNewsPool]);
 
+  if (appRoute === 'admin') {
+    return (
+      <AdminPage
+        items={rawNews}
+        auditState={auditState}
+        onHide={(id) => setAuditState((state) => ({ ...state, hiddenIds: unique([...state.hiddenIds, id]) }))}
+        onVerify={(id) => setAuditState((state) => ({ ...state, verifiedIds: unique([...state.verifiedIds, id]) }))}
+        onCategoryChange={(id, nextCategory) => setAuditState((state) => ({
+          ...state,
+          categoryOverrides: { ...state.categoryOverrides, [id]: nextCategory },
+        }))}
+        onRestoreAll={() => setAuditState(emptyAuditState)}
+      />
+    );
+  }
+
   return (
     <main>
       <nav className="topNav appNav">
@@ -189,10 +222,12 @@ function App() {
 
       <section className="radarHero" id="radar">
         <div className="sciRadar">
-          <div className="sciCopy">
-            <p className="eyebrow"><Globe2 size={16} /> 全球低空经济雷达</p>
-            <h1><span>全球低空经济</span><i>热点扫描</i></h1>
-            <p>把地区、政策、公司和资本线索收进一个低空运行态势界面，先看信号，再进入下方资讯流。</p>
+          <div className="radarSummaryBar">
+            <div className="sectionHeading radarHeading">
+              <p className="eyebrow"><Globe2 size={16} /> 全球雷达</p>
+              <h1>全球低空经济雷达</h1>
+              <p>地区热点、政策信号和公司动态的实时入口。</p>
+            </div>
             <div className="heroStats" aria-label="站点概览">
               <Metric label="跟踪地区" value={regions.length} suffix="个" />
               <Metric label="动态条目" value={allNews.length} suffix="条" />
@@ -251,9 +286,9 @@ function App() {
 
       <section className="section newsSection" id="news">
         <div className="sectionTitle wide">
-          <div>
+          <div className="sectionHeading">
             <p className="eyebrow">信息流</p>
-            <h2>行业资讯、公司与融资动态</h2>
+            <h2>全球动态流</h2>
             <p className="sectionLead">按阅读场景组织内容：先看行业趋势，再看公司动作和融资上市线索。</p>
           </div>
           <div className="controls">
@@ -272,23 +307,6 @@ function App() {
             setQuery('');
           }}>清除筛选</button>
         </div>
-        <div className="auditToolbar">
-          <button className={`toggle ${showAuditPanel ? 'on' : ''}`} onClick={() => setShowAuditPanel(!showAuditPanel)}><Settings2 size={16} /> 审核面板</button>
-          <span>已隐藏 {auditState.hiddenIds.length} 条，已标记有效 {auditState.verifiedIds.length} 条</span>
-        </div>
-        {showAuditPanel && (
-          <AuditPanel
-            items={rawNews}
-            auditState={auditState}
-            onHide={(id) => setAuditState((state) => ({ ...state, hiddenIds: unique([...state.hiddenIds, id]) }))}
-            onVerify={(id) => setAuditState((state) => ({ ...state, verifiedIds: unique([...state.verifiedIds, id]) }))}
-            onCategoryChange={(id, nextCategory) => setAuditState((state) => ({
-              ...state,
-              categoryOverrides: { ...state.categoryOverrides, [id]: nextCategory },
-            }))}
-            onRestoreAll={() => setAuditState(emptyAuditState)}
-          />
-        )}
         <div className="feedTabs">
           {feedModes.map((mode) => (
             <button key={mode} className={feedMode === mode ? 'selected' : ''} onClick={() => setFeedMode(mode)}>{mode}</button>
@@ -300,7 +318,7 @@ function App() {
           ))}
         </div>
         <div className="newsGrid">
-          {filteredNews.map((item) => (
+          {visibleNews.map((item) => (
             <button className="newsCard" onClick={() => setSelectedNews(item)} key={item.id}>
               <div className="newsMeta">
                 <span>{item.country}</span>
@@ -317,6 +335,25 @@ function App() {
             </button>
           ))}
         </div>
+        {!!filteredNews.length && (
+          <div className="paginationBar" aria-label="信息流分页">
+            <span>第 {currentNewsPage} / {totalNewsPages} 页，共 {filteredNews.length} 条动态</span>
+            <div className="paginationControls">
+              <button onClick={() => setNewsPage((page) => Math.max(1, page - 1))} disabled={currentNewsPage === 1}>上一页</button>
+              {paginationPages.map((page) => (
+                <button
+                  key={page}
+                  className={page === currentNewsPage ? 'active' : ''}
+                  onClick={() => setNewsPage(page)}
+                  aria-current={page === currentNewsPage ? 'page' : undefined}
+                >
+                  {page}
+                </button>
+              ))}
+              <button onClick={() => setNewsPage((page) => Math.min(totalNewsPages, page + 1))} disabled={currentNewsPage === totalNewsPages}>下一页</button>
+            </div>
+          </div>
+        )}
         {feedMode === '融资与上市' && (
           <div className="marketPulseStrip" aria-label="融资与上市观察">
             {listedCompanySamples.map((company) => {
@@ -337,9 +374,9 @@ function App() {
 
       <section className="section compareSection" id="compare">
         <div className="sectionTitle">
-          <div>
+          <div className="sectionHeading">
             <p className="eyebrow">市场对比</p>
-            <h2>国家与地区量化对比</h2>
+            <h2>量化对比</h2>
           </div>
           <p className="sectionLead">用公开样本市值、市场潜力口径和活跃赛道做横向浏览。</p>
         </div>
@@ -454,6 +491,48 @@ function SelectText<T extends string>({ value, onChange, options }: { value: T; 
     <select value={value} onChange={(event) => onChange(event.target.value)}>
       {options.map((option) => <option key={option} value={option}>{option}</option>)}
     </select>
+  );
+}
+
+function AdminPage({
+  items,
+  auditState,
+  onHide,
+  onVerify,
+  onCategoryChange,
+  onRestoreAll,
+}: {
+  items: DisplayNewsItem[];
+  auditState: AuditState;
+  onHide: (id: string) => void;
+  onVerify: (id: string) => void;
+  onCategoryChange: (id: string, category: NewsCategory) => void;
+  onRestoreAll: () => void;
+}) {
+  return (
+    <main className="adminPage">
+      <section className="adminShell">
+        <div className="adminHeader">
+          <div>
+            <p className="eyebrow"><Settings2 size={16} /> 后台管理</p>
+            <h1>资讯审核</h1>
+            <p>这个界面不在首页展示，用于内部过滤噪音、修正分类和标记有效线索。</p>
+          </div>
+          <a className="textButton" href="#news">返回前台</a>
+        </div>
+        <div className="auditToolbar adminOnly">
+          <span>已隐藏 {auditState.hiddenIds.length} 条，已标记有效 {auditState.verifiedIds.length} 条</span>
+        </div>
+        <AuditPanel
+          items={items}
+          auditState={auditState}
+          onHide={onHide}
+          onVerify={onVerify}
+          onCategoryChange={onCategoryChange}
+          onRestoreAll={onRestoreAll}
+        />
+      </section>
+    </main>
   );
 }
 
@@ -641,6 +720,24 @@ function loadAuditState(): AuditState {
   } catch {
     return emptyAuditState;
   }
+}
+
+function getAppRoute() {
+  if (typeof window === 'undefined') return 'public';
+  return window.location.hash === '#admin' ? 'admin' : 'public';
+}
+
+function getPaginationPages(currentPage: number, totalPages: number) {
+  if (totalPages <= 5) {
+    return Array.from({ length: totalPages }, (_, index) => index + 1);
+  }
+
+  if (currentPage <= 3) return [1, 2, 3, 4, 5];
+  if (currentPage >= totalPages - 2) {
+    return Array.from({ length: 5 }, (_, index) => totalPages - 4 + index);
+  }
+
+  return [currentPage - 2, currentPage - 1, currentPage, currentPage + 1, currentPage + 2];
 }
 
 function unique(values: string[]) {
