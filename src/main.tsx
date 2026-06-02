@@ -214,75 +214,11 @@ function App() {
       <nav className="topNav appNav">
         <div className="brand"><RadioTower size={20} /> 全球低空经济观察站</div>
         <div className="navPills">
-          <a href="#radar">全球雷达</a>
           <a href="#news">信息流</a>
+          <a href="#radar">全球雷达</a>
           <a href="#compare">量化对比</a>
         </div>
       </nav>
-
-      <section className="radarHero" id="radar">
-        <div className="sciRadar">
-          <div className="radarSummaryBar">
-            <div className="sectionHeading radarHeading">
-              <p className="eyebrow"><Globe2 size={16} /> 全球雷达</p>
-              <h1>全球低空经济雷达</h1>
-              <p>地区热点、政策信号和公司动态的实时入口。</p>
-            </div>
-            <div className="heroStats" aria-label="站点概览">
-              <Metric label="跟踪地区" value={regions.length} suffix="个" />
-              <Metric label="动态条目" value={allNews.length} suffix="条" />
-              <Metric label="来源口径" value={marketSources.length} suffix="类" />
-            </div>
-          </div>
-          <div className="scannerPanel">
-            <div className="scannerTop">
-              <span>Signal Radar</span>
-              <strong>{active.name} · {regionHotNews.length} 条热点</strong>
-            </div>
-            <div className="scannerBody">
-              <div className="radarDisc" aria-label="地区雷达">
-                <div className="radarSweep" />
-                <div className="radarCore" />
-                {regions.map((region, index) => (
-                  <button
-                    key={region.key}
-                    className={`radarNode node${index + 1} ${region.key === activeRegion ? 'active' : ''}`}
-                    onClick={() => setActiveRegion(region.key)}
-                    aria-label={`查看${region.name}`}
-                  >
-                    <span />
-                    <b>{region.name}</b>
-                    <small>{regionCounts[region.key] ? `${regionCounts[region.key]} 条` : '入口'}</small>
-                  </button>
-                ))}
-              </div>
-              <article className="radarReadout">
-                <p className="eyebrow">{active.label}</p>
-                <h2>{active.name}</h2>
-                <p>{active.summary}</p>
-                <div className="signalChips">
-                  {[...active.signals.slice(0, 2), ...active.risks.slice(0, 1)].map((item) => <span key={item}>{item}</span>)}
-                </div>
-              </article>
-            </div>
-            <div className="signalTicker" aria-label="当前地区重点热点">
-              <div className="miniHeader">
-                <strong>热点信号</strong>
-                <span>点击查看详情</span>
-              </div>
-              <div className="tickerItems">
-                {regionHotNews.map((item) => (
-                  <button className="hotNewsItem" key={item.id} onClick={() => setSelectedNews(item)}>
-                    <span>{item.category}</span>
-                    <b>{item.title}</b>
-                    <small>{item.source}</small>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       <section className="section newsSection" id="news">
         <div className="sectionTitle wide">
@@ -370,6 +306,70 @@ function App() {
           </div>
         )}
         {!filteredNews.length && <div className="emptyState">当前筛选下没有可展示的资讯，建议放宽分类、来源或地区条件。</div>}
+      </section>
+
+      <section className="radarHero" id="radar">
+        <div className="sciRadar">
+          <div className="radarSummaryBar">
+            <div className="sectionHeading radarHeading">
+              <p className="eyebrow"><Globe2 size={16} /> 全球雷达</p>
+              <h1>全球低空经济雷达</h1>
+              <p>地区热点、政策信号和公司动态的实时入口。</p>
+            </div>
+            <div className="heroStats" aria-label="站点概览">
+              <Metric label="跟踪地区" value={regions.length} suffix="个" />
+              <Metric label="动态条目" value={allNews.length} suffix="条" />
+              <Metric label="来源口径" value={marketSources.length} suffix="类" />
+            </div>
+          </div>
+          <div className="scannerPanel">
+            <div className="scannerTop">
+              <span>Signal Radar</span>
+              <strong>{active.name} · {regionHotNews.length} 条热点</strong>
+            </div>
+            <div className="scannerBody">
+              <div className="radarDisc" aria-label="地区雷达">
+                <div className="radarSweep" />
+                <div className="radarCore" />
+                {regions.map((region, index) => (
+                  <button
+                    key={region.key}
+                    className={`radarNode node${index + 1} ${region.key === activeRegion ? 'active' : ''}`}
+                    onClick={() => setActiveRegion(region.key)}
+                    aria-label={`查看${region.name}`}
+                  >
+                    <span />
+                    <b>{region.name}</b>
+                    <small>{regionCounts[region.key] ? `${regionCounts[region.key]} 条` : '入口'}</small>
+                  </button>
+                ))}
+              </div>
+              <article className="radarReadout">
+                <p className="eyebrow">{active.label}</p>
+                <h2>{active.name}</h2>
+                <p>{active.summary}</p>
+                <div className="signalChips">
+                  {[...active.signals.slice(0, 2), ...active.risks.slice(0, 1)].map((item) => <span key={item}>{item}</span>)}
+                </div>
+              </article>
+            </div>
+            <div className="signalTicker" aria-label="当前地区重点热点">
+              <div className="miniHeader">
+                <strong>热点信号</strong>
+                <span>点击查看详情</span>
+              </div>
+              <div className="tickerItems">
+                {regionHotNews.map((item) => (
+                  <button className="hotNewsItem" key={item.id} onClick={() => setSelectedNews(item)}>
+                    <span>{item.category}</span>
+                    <b>{item.title}</b>
+                    <small>{item.source}</small>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section className="section compareSection" id="compare">
