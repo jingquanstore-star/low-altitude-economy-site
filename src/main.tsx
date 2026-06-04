@@ -6,7 +6,6 @@ import {
   CheckCircle2,
   EyeOff,
   ExternalLink,
-  Filter,
   Globe2,
   RadioTower,
   RotateCcw,
@@ -27,11 +26,9 @@ import {
 } from './data';
 
 const categoryOptions: Array<NewsCategory | '全部'> = ['全部', '政策', '商业化', '适航', '基建', '技术', '融资'];
-const regionOptions = ['全部', '中国', '美国', '欧洲', '中东', '东南亚', '全球'] as const;
-const sourceTypeOptions = ['全部', '官方发布', '地方政府', '企业公告', '主流媒体', '行业媒体', '自媒体观察', '研究报告'] as const;
-const feedModes = ['行业资讯', '公司', '融资与上市'] as const;
+const feedModes = ['行业资讯', '公司', '投融资', 'IPO'] as const;
 const auditStorageKey = 'low-altitude-news-audit-v1';
-const newsPageSize = 9;
+const newsPageSize = 12;
 const publicUrl = (path: string) => `${import.meta.env.BASE_URL}${path}`;
 
 type DisplayNewsItem = {
@@ -83,13 +80,9 @@ const emptyAuditState: AuditState = {
 function App() {
   const [activeRegion, setActiveRegion] = useState<RegionKey>('china');
   const [compareRegion, setCompareRegion] = useState<RegionKey>('us');
-  const [category, setCategory] = useState<NewsCategory | '全部'>('全部');
   const [feedMode, setFeedMode] = useState<(typeof feedModes)[number]>('行业资讯');
-  const [priorityOnly, setPriorityOnly] = useState(true);
   const [query, setQuery] = useState('');
   const [cachedNews, setCachedNews] = useState<DisplayNewsItem[]>([]);
-  const [newsRegion, setNewsRegion] = useState<(typeof regionOptions)[number]>('全部');
-  const [sourceType, setSourceType] = useState<(typeof sourceTypeOptions)[number]>('全部');
   const [selectedNews, setSelectedNews] = useState<DisplayNewsItem | null>(null);
   const [newsPage, setNewsPage] = useState(1);
   const [auditState, setAuditState] = useState<AuditState>(() => loadAuditState());
@@ -158,19 +151,15 @@ function App() {
 
   const filteredNews = useMemo(() => {
     return allNews.filter((item) => {
-      const categoryMatch = category === '全部' || item.category === category;
       const modeMatch = feedModeMatches(item, feedMode);
-      const priorityMatch = !priorityOnly || item.priority === '重点跟踪';
-      const regionMatch = newsRegion === '全部' || item.country === newsRegion;
-      const sourceTypeMatch = sourceType === '全部' || item.sourceType === sourceType;
-      const queryMatch = [item.title, item.summary, item.country, item.source].join(' ').toLowerCase().includes(query.toLowerCase());
-      return categoryMatch && modeMatch && priorityMatch && regionMatch && sourceTypeMatch && queryMatch;
+      const queryMatch = [item.title, item.summary, item.country, item.source, item.category, item.sourceType].join(' ').toLowerCase().includes(query.toLowerCase());
+      return modeMatch && queryMatch;
     });
-  }, [allNews, category, feedMode, newsRegion, priorityOnly, query, sourceType]);
+  }, [allNews, feedMode, query]);
 
   useEffect(() => {
     setNewsPage(1);
-  }, [category, feedMode, newsRegion, priorityOnly, query, sourceType]);
+  }, [feedMode, query]);
 
   const totalNewsPages = Math.max(1, Math.ceil(filteredNews.length / newsPageSize));
   const currentNewsPage = Math.min(newsPage, totalNewsPages);
@@ -212,45 +201,25 @@ function App() {
   return (
     <main>
       <nav className="topNav appNav">
-        <div className="brand"><RadioTower size={20} /> 全球低空经济观察站</div>
+        <div className="brand siteBrand">
+          <span className="brandSignal"><RadioTower size={24} /></span>
+          <span className="brandText" data-text="全球低空经济观察站">全球低空经济观察站</span>
+        </div>
         <div className="navPills">
-          <a href="#news">信息流</a>
-          <a href="#radar">全球雷达</a>
-          <a href="#compare">量化对比</a>
+          <a href="#news">全球市场资讯</a>
+          <a href="#radar">全球市场雷达</a>
+          <a href="#compare">全球市场对比</a>
         </div>
       </nav>
 
       <section className="section newsSection" id="news">
-        <div className="sectionTitle wide">
-          <div className="sectionHeading">
-            <p className="eyebrow">信息流</p>
-            <h2>全球动态流</h2>
-            <p className="sectionLead">按阅读场景组织内容：先看行业趋势，再看公司动作和融资上市线索。</p>
-          </div>
-          <div className="controls">
-            <label className="searchBox"><Search size={17} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索政策、企业、地区" /></label>
-            <button className={`toggle ${priorityOnly ? 'on' : ''}`} onClick={() => setPriorityOnly(!priorityOnly)}><Filter size={16} /> 重点</button>
-          </div>
-        </div>
-        <div className="filterPanel">
-          <label>地区<SelectText value={newsRegion} onChange={(value) => setNewsRegion(value as typeof newsRegion)} options={regionOptions} /></label>
-          <label>来源<SelectText value={sourceType} onChange={(value) => setSourceType(value as typeof sourceType)} options={sourceTypeOptions} /></label>
-          <button className="textButton" onClick={() => {
-            setCategory('全部');
-            setNewsRegion('全部');
-            setSourceType('全部');
-            setPriorityOnly(false);
-            setQuery('');
-          }}>清除筛选</button>
+        <div className="newsIntroPanel">
+          <p className="eyebrow sectionOnlyTitle">全球市场资讯</p>
+          <label className="searchBox heroSearch"><Search size={19} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索政策、企业、地区、融资、上市" /></label>
         </div>
         <div className="feedTabs">
           {feedModes.map((mode) => (
             <button key={mode} className={feedMode === mode ? 'selected' : ''} onClick={() => setFeedMode(mode)}>{mode}</button>
-          ))}
-        </div>
-        <div className="tabs compactTabs">
-          {categoryOptions.map((option) => (
-            <button key={option} className={category === option ? 'selected' : ''} onClick={() => setCategory(option)}>{option}</button>
           ))}
         </div>
         <div className="newsGrid">
@@ -272,7 +241,7 @@ function App() {
           ))}
         </div>
         {!!filteredNews.length && (
-          <div className="paginationBar" aria-label="信息流分页">
+          <div className="paginationBar" aria-label="全球市场资讯分页">
             <span>第 {currentNewsPage} / {totalNewsPages} 页，共 {filteredNews.length} 条动态</span>
             <div className="paginationControls">
               <button onClick={() => setNewsPage((page) => Math.max(1, page - 1))} disabled={currentNewsPage === 1}>上一页</button>
@@ -290,8 +259,8 @@ function App() {
             </div>
           </div>
         )}
-        {feedMode === '融资与上市' && (
-          <div className="marketPulseStrip" aria-label="融资与上市观察">
+        {(feedMode === '投融资' || feedMode === 'IPO') && (
+          <div className="marketPulseStrip" aria-label={`${feedMode}观察`}>
             {listedCompanySamples.map((company) => {
               const region = regions.find((item) => item.key === company.region);
               return (
@@ -311,11 +280,7 @@ function App() {
       <section className="radarHero" id="radar">
         <div className="sciRadar">
           <div className="radarSummaryBar">
-            <div className="sectionHeading radarHeading">
-              <p className="eyebrow"><Globe2 size={16} /> 全球雷达</p>
-              <h1>全球低空经济雷达</h1>
-              <p>地区热点、政策信号和公司动态的实时入口。</p>
-            </div>
+            <p className="eyebrow sectionOnlyTitle"><Globe2 size={16} /> 全球市场雷达</p>
             <div className="heroStats" aria-label="站点概览">
               <Metric label="跟踪地区" value={regions.length} suffix="个" />
               <Metric label="动态条目" value={allNews.length} suffix="条" />
@@ -374,11 +339,7 @@ function App() {
 
       <section className="section compareSection" id="compare">
         <div className="sectionTitle">
-          <div className="sectionHeading">
-            <p className="eyebrow">市场对比</p>
-            <h2>量化对比</h2>
-          </div>
-          <p className="sectionLead">用公开样本市值、市场潜力口径和活跃赛道做横向浏览。</p>
+          <p className="eyebrow sectionOnlyTitle"><ShieldCheck size={18} /> 全球市场对比</p>
         </div>
         <div className="methodNote">
           <ShieldCheck size={18} />
@@ -658,17 +619,26 @@ function countryToRegionKey(country: string): RegionKey | undefined {
 }
 
 function feedModeMatches(item: DisplayNewsItem, mode: (typeof feedModes)[number]) {
-  const text = `${item.title} ${item.summary} ${item.source} ${item.sourceType}`.toLowerCase();
+  const text = `${item.title} ${item.summary} ${item.source} ${item.sourceType} ${item.category}`.toLowerCase();
+  const ipoKeywords = ['ipo', '首次公开募股', '公开募股', '招股', '递表', '上市申请', '上市聆讯', '上市样本', '上市公司', '二级市场', '市值', 'spac', '纳斯达克', '纽交所', '港交所'];
+  const fundingKeywords = ['融资', '投融资', '投资', '募资', '增资', '基金', '风投', '创投', 'pre-a', 'series', 'funding', 'capital', 'investor'];
+  const companyKeywords = ['joby', 'archer', '亿航', 'ehang', '峰飞', '小鹏', '沃飞', '沃兰特', '时的科技', '大疆', '美团', '丰翼', '迅蚁', '中信海直', '莱斯信息', 'volocopter', 'everdrone'];
+  const isIpo = ipoKeywords.some((keyword) => text.includes(keyword));
+  const isFunding = item.category === '融资' || fundingKeywords.some((keyword) => text.includes(keyword));
+  const isCompany = item.sourceType === '企业公告'
+    || item.category === '商业化'
+    || companyKeywords.some((keyword) => text.includes(keyword));
+
   if (mode === '公司') {
-    return item.sourceType === '企业公告'
-      || item.category === '商业化'
-      || ['joby', 'archer', '亿航', 'ehang', '峰飞', '小鹏', 'volocopter', 'everdrone'].some((keyword) => text.includes(keyword));
+    return isCompany && !isFunding && !isIpo;
   }
-  if (mode === '融资与上市') {
-    return item.category === '融资'
-      || ['ipo', '上市', '融资', '市值', 'investor', 'funding', 'capital'].some((keyword) => text.includes(keyword));
+  if (mode === '投融资') {
+    return isFunding && !isIpo;
   }
-  return item.category !== '融资';
+  if (mode === 'IPO') {
+    return isIpo;
+  }
+  return !isFunding && !isIpo;
 }
 
 function formatUsdBillion(value: number) {
