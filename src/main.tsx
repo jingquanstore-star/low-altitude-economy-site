@@ -7,7 +7,6 @@ import {
   EyeOff,
   ExternalLink,
   Globe2,
-  RadioTower,
   RotateCcw,
   Search,
   Settings2,
@@ -201,20 +200,22 @@ function App() {
   return (
     <main>
       <nav className="topNav appNav">
-        <div className="brand siteBrand">
-          <span className="brandSignal"><RadioTower size={24} /></span>
-          <span className="brandText" data-text="全球低空经济观察站">全球低空经济观察站</span>
+        <div className="brand siteBrand" aria-label="新浪低空">
+          <span className="brandTextMark" aria-hidden="true">
+            <span className="brandTextDark">新浪</span>
+            <span className="brandTextAir">低空</span>
+          </span>
         </div>
         <div className="navPills">
-          <a href="#news">全球市场资讯</a>
-          <a href="#radar">全球市场雷达</a>
-          <a href="#compare">全球市场对比</a>
+          <a href="#news">低空资讯</a>
+          <a href="#radar">全球雷达</a>
+          <a href="#compare">市场对比</a>
         </div>
       </nav>
 
       <section className="section newsSection" id="news">
         <div className="newsIntroPanel">
-          <p className="eyebrow sectionOnlyTitle">全球市场资讯</p>
+          <p className="eyebrow sectionOnlyTitle">低空资讯</p>
           <label className="searchBox heroSearch"><Search size={19} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索政策、企业、地区、融资、上市" /></label>
         </div>
         <div className="feedTabs">
@@ -223,25 +224,37 @@ function App() {
           ))}
         </div>
         <div className="newsGrid">
-          {visibleNews.map((item) => (
-            <button className="newsCard" onClick={() => setSelectedNews(item)} key={item.id}>
-              <div className="newsMeta">
-                <span>{item.country}</span>
-                <span>{item.category}</span>
-                <span>{item.sourceType}</span>
-              </div>
-              <h3>{item.title}</h3>
-              <p>{item.summary}</p>
-              <div className="newsFooter">
-                <span><CalendarDays size={15} /> {item.date}</span>
-                <span>{item.cacheMode}</span>
-                <span>{item.source}</span>
-              </div>
-            </button>
-          ))}
+          {visibleNews.map((item) => {
+            const heroImage = newsHeroImage(item);
+            return (
+              <button className="newsCard" onClick={() => setSelectedNews(item)} key={item.id}>
+                <div
+                  className={`newsVisual ${newsVisualType(item)} ${heroImage ? 'hasNewsImage' : ''}`}
+                  style={heroImage ? { backgroundImage: `url(${heroImage})` } : undefined}
+                  aria-hidden="true"
+                >
+                  {!heroImage && <span className="visualTitle">低空资讯</span>}
+                </div>
+                <div className="newsCardBody">
+                  <div className="newsMeta">
+                    <span>{item.country}</span>
+                    <span>{item.category}</span>
+                    <span>{item.sourceType}</span>
+                  </div>
+                  <h3>{item.title}</h3>
+                  <p>{item.summary}</p>
+                  <div className="newsFooter">
+                    <span><CalendarDays size={15} /> {item.date}</span>
+                    <span>{item.cacheMode}</span>
+                    <span>{item.source}</span>
+                  </div>
+                </div>
+              </button>
+            );
+          })}
         </div>
         {!!filteredNews.length && (
-          <div className="paginationBar" aria-label="全球市场资讯分页">
+          <div className="paginationBar" aria-label="低空资讯分页">
             <span>第 {currentNewsPage} / {totalNewsPages} 页，共 {filteredNews.length} 条动态</span>
             <div className="paginationControls">
               <button onClick={() => setNewsPage((page) => Math.max(1, page - 1))} disabled={currentNewsPage === 1}>上一页</button>
@@ -280,7 +293,7 @@ function App() {
       <section className="radarHero" id="radar">
         <div className="sciRadar">
           <div className="radarSummaryBar">
-            <p className="eyebrow sectionOnlyTitle"><Globe2 size={16} /> 全球市场雷达</p>
+            <p className="eyebrow sectionOnlyTitle"><Globe2 size={16} /> 全球雷达</p>
             <div className="heroStats" aria-label="站点概览">
               <Metric label="跟踪地区" value={regions.length} suffix="个" />
               <Metric label="动态条目" value={allNews.length} suffix="条" />
@@ -339,7 +352,7 @@ function App() {
 
       <section className="section compareSection" id="compare">
         <div className="sectionTitle">
-          <p className="eyebrow sectionOnlyTitle"><ShieldCheck size={18} /> 全球市场对比</p>
+          <p className="eyebrow sectionOnlyTitle"><ShieldCheck size={18} /> 市场对比</p>
         </div>
         <div className="methodNote">
           <ShieldCheck size={18} />
@@ -639,6 +652,22 @@ function feedModeMatches(item: DisplayNewsItem, mode: (typeof feedModes)[number]
     return isIpo;
   }
   return !isFunding && !isIpo;
+}
+
+function newsVisualType(item: DisplayNewsItem) {
+  return newsHeroImage(item) ? 'visualMatched' : 'visualTemplate';
+}
+
+function newsHeroImage(item: DisplayNewsItem) {
+  const id = String(item.id);
+  const imageById: Record<string, string> = {
+    '101': publicUrl('images/news/ehang-eh216s.jpg'),
+    '103': publicUrl('images/news/aeroht-flying-car.jpg'),
+    '104': publicUrl('images/news/aerofugia-ae200.jpg'),
+    '106': publicUrl('images/news/dji-agriculture.jpg'),
+    '107': publicUrl('images/news/meituan-drone.jpg'),
+  };
+  return imageById[id] ?? '';
 }
 
 function formatUsdBillion(value: number) {
