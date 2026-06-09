@@ -4,6 +4,8 @@ import {
   ArrowRightLeft,
   CalendarDays,
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
   EyeOff,
   ExternalLink,
   Globe2,
@@ -11,6 +13,7 @@ import {
   Search,
   Settings2,
   ShieldCheck,
+  Sparkles,
   X,
 } from 'lucide-react';
 import './styles.css';
@@ -29,6 +32,7 @@ const feedModes = ['行业资讯', '公司', '投融资', 'IPO'] as const;
 const auditStorageKey = 'low-altitude-news-audit-v1';
 const newsPageSize = 12;
 const publicUrl = (path: string) => `${import.meta.env.BASE_URL}${path}`;
+const templateCoverIds = new Set(['1', '2', '105']);
 
 type DisplayNewsItem = {
   id: string | number;
@@ -84,6 +88,7 @@ function App() {
   const [cachedNews, setCachedNews] = useState<DisplayNewsItem[]>([]);
   const [selectedNews, setSelectedNews] = useState<DisplayNewsItem | null>(null);
   const [newsPage, setNewsPage] = useState(1);
+  const [activeSpotlight, setActiveSpotlight] = useState(0);
   const [auditState, setAuditState] = useState<AuditState>(() => loadAuditState());
   const [appRoute, setAppRoute] = useState(() => getAppRoute());
 
@@ -164,6 +169,21 @@ function App() {
   const currentNewsPage = Math.min(newsPage, totalNewsPages);
   const visibleNews = filteredNews.slice((currentNewsPage - 1) * newsPageSize, currentNewsPage * newsPageSize);
   const paginationPages = getPaginationPages(currentNewsPage, totalNewsPages);
+  const spotlightNews = useMemo(() => getSpotlightNews(allNews), [allNews]);
+
+  useEffect(() => {
+    if (activeSpotlight >= spotlightNews.length) {
+      setActiveSpotlight(0);
+    }
+  }, [activeSpotlight, spotlightNews.length]);
+
+  useEffect(() => {
+    if (spotlightNews.length < 2) return;
+    const timer = window.setInterval(() => {
+      setActiveSpotlight((index) => (index + 1) % spotlightNews.length);
+    }, 5800);
+    return () => window.clearInterval(timer);
+  }, [spotlightNews.length]);
 
   const regionHotNews = useMemo(() => {
     const sameRegion = regionalNewsPool.filter((item) => itemRegionKey(item) === activeRegion);
@@ -198,7 +218,7 @@ function App() {
   }
 
   return (
-    <main>
+    <main className="visualTheme-sunrise">
       <nav className="topNav appNav">
         <div className="brand siteBrand" aria-label="新浪低空">
           <span className="brandTextMark" aria-hidden="true">
@@ -218,6 +238,15 @@ function App() {
           <p className="eyebrow sectionOnlyTitle">低空资讯</p>
           <label className="searchBox heroSearch"><Search size={19} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索政策、企业、地区、融资、上市" /></label>
         </div>
+        {spotlightNews.length > 0 && (
+          <SpotlightCarousel
+            items={spotlightNews}
+            activeIndex={activeSpotlight}
+            onOpen={setSelectedNews}
+            onPrev={() => setActiveSpotlight((index) => (index - 1 + spotlightNews.length) % spotlightNews.length)}
+            onNext={() => setActiveSpotlight((index) => (index + 1) % spotlightNews.length)}
+          />
+        )}
         <div className="feedTabs">
           {feedModes.map((mode) => (
             <button key={mode} className={feedMode === mode ? 'selected' : ''} onClick={() => setFeedMode(mode)}>{mode}</button>
@@ -229,7 +258,7 @@ function App() {
             return (
               <button className="newsCard" onClick={() => setSelectedNews(item)} key={item.id}>
                 <div
-                  className={`newsVisual ${newsVisualType(item)} ${heroImage ? 'hasNewsImage' : ''}`}
+                  className={`newsVisual ${newsVisualType(item)} ${newsImageClass(item)} ${heroImage ? 'hasNewsImage' : ''}`}
                   style={heroImage ? { backgroundImage: `url(${heroImage})` } : undefined}
                   aria-hidden="true"
                 >
@@ -417,6 +446,66 @@ function Metric({ label, value, suffix = '' }: { label: string; value: number; s
 
 function SignalList({ title, items }: { title: string; items: string[] }) {
   return <div><h4>{title}</h4><ul>{items.map((item) => <li key={item}>{item}</li>)}</ul></div>;
+}
+
+function SpotlightCarousel({
+  items,
+  activeIndex,
+  onOpen,
+  onPrev,
+  onNext,
+}: {
+  items: DisplayNewsItem[];
+  activeIndex: number;
+  onOpen: (item: DisplayNewsItem) => void;
+  onPrev: () => void;
+  onNext: () => void;
+}) {
+  const activeItem = items[activeIndex] ?? items[0];
+  const heroImage = activeItem ? newsHeroImage(activeItem) : '';
+
+  return (
+    <section className="spotlightCarousel" aria-label="重点资讯轮播">
+      <article
+        className={`spotlightStage ${newsImageClass(activeItem)} ${heroImage ? 'hasSpotlightImage' : 'spotlightTemplate'}`}
+        style={heroImage ? { backgroundImage: `url(${heroImage})` } : undefined}
+        onClick={() => onOpen(activeItem)}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            onOpen(activeItem);
+          }
+        }}
+        role="button"
+        tabIndex={0}
+      >
+        <div className="spotlightNoise" aria-hidden="true" />
+        <div className="spotlightCopy">
+          <h3>{activeItem.title}</h3>
+          <div className="spotlightMeta">
+            <span>{activeItem.country}</span>
+            <span>{activeItem.category}</span>
+            <span>{activeItem.source}</span>
+          </div>
+        </div>
+        <div className="spotlightControls" onClick={(event) => event.stopPropagation()}>
+          <button aria-label="上一条重点资讯" onClick={onPrev}><ChevronLeft size={18} /></button>
+          <button aria-label="下一条重点资讯" onClick={onNext}><ChevronRight size={18} /></button>
+        </div>
+      </article>
+      <aside className="spotlightRail fixedFocusVisual" aria-label="新浪低空固定焦点图">
+        <div
+          className="fixedFocusImage"
+          style={{ backgroundImage: `url(${publicUrl('images/low-altitude-hero.png')})` }}
+          aria-hidden="true"
+        />
+        <div className="fixedFocusOverlay">
+          <span className="featureBadge"><Sparkles size={14} /> 特别呈现</span>
+          <b><span>城市低空</span><span>运行窗口</span></b>
+        </div>
+      </aside>
+    </section>
+  );
 }
 
 function QuantCard({ region, quant }: { region: typeof regions[number]; quant: typeof quantRegions[number] }) {
@@ -654,20 +743,82 @@ function feedModeMatches(item: DisplayNewsItem, mode: (typeof feedModes)[number]
   return !isFunding && !isIpo;
 }
 
+function getSpotlightNews(items: DisplayNewsItem[]) {
+  return [...items]
+    .sort((a, b) => spotlightScore(b) - spotlightScore(a))
+    .slice(0, 5);
+}
+
+function spotlightScore(item: DisplayNewsItem) {
+  const time = new Date(item.date).getTime();
+  const recency = Number.isNaN(time) ? 0 : time / 1000000000000;
+  const imageScore = newsHeroImage(item) ? 90 : 0;
+  const priorityScore = item.priority === '重点跟踪' ? 60 : 0;
+  const companyScore = item.sourceType === '企业公告' ? 28 : 0;
+  const chinaScore = item.country === '中国' ? 12 : 0;
+  return imageScore + priorityScore + companyScore + chinaScore + recency;
+}
+
 function newsVisualType(item: DisplayNewsItem) {
-  return newsHeroImage(item) ? 'visualMatched' : 'visualTemplate';
+  return shouldUseTemplateCover(item) ? 'visualTemplate' : 'visualMatched';
+}
+
+function newsImageClass(item: DisplayNewsItem) {
+  const id = String(item.id);
+  const classById: Record<string, string> = {
+    '101': 'newsImageEhang',
+    '102': 'newsImageAutoflight',
+    '103': 'newsImageAeroht',
+    '104': 'newsImageAerofugia',
+    '106': 'newsImageDji',
+    '107': 'newsImageMeituan',
+  };
+  return classById[id] ?? '';
 }
 
 function newsHeroImage(item: DisplayNewsItem) {
+  if (shouldUseTemplateCover(item)) return '';
   const id = String(item.id);
   const imageById: Record<string, string> = {
+    '2': publicUrl('images/news/aerofugia-ae200.jpg'),
+    '3': publicUrl('images/news/meituan-drone.jpg'),
+    '4': publicUrl('images/low-altitude-hero.png'),
+    '5': publicUrl('images/news/aerofugia-ae200.jpg'),
+    '6': publicUrl('images/low-altitude-hero.png'),
     '101': publicUrl('images/news/ehang-eh216s.jpg'),
+    '102': publicUrl('images/news/autoflight-carryall.jpg'),
     '103': publicUrl('images/news/aeroht-flying-car.jpg'),
     '104': publicUrl('images/news/aerofugia-ae200.jpg'),
+    '105': publicUrl('images/news/aerofugia-ae200.jpg'),
     '106': publicUrl('images/news/dji-agriculture.jpg'),
     '107': publicUrl('images/news/meituan-drone.jpg'),
+    '108': publicUrl('images/news/ehang-eh216s.jpg'),
+    '109': publicUrl('images/low-altitude-hero.png'),
+    '110': publicUrl('images/news/aerofugia-ae200.jpg'),
+    '111': publicUrl('images/low-altitude-hero.png'),
   };
-  return imageById[id] ?? '';
+  return imageById[id] ?? fallbackNewsImage(item);
+}
+
+function shouldUseTemplateCover(item: DisplayNewsItem) {
+  return templateCoverIds.has(String(item.id));
+}
+
+function fallbackNewsImage(item: DisplayNewsItem) {
+  const text = `${item.title} ${item.summary} ${item.source} ${item.category}`.toLowerCase();
+  if (text.includes('大疆') || text.includes('农业') || text.includes('植保') || text.includes('巡检')) {
+    return publicUrl('images/news/dji-agriculture.jpg');
+  }
+  if (text.includes('物流') || text.includes('配送') || text.includes('货运') || text.includes('丰翼') || text.includes('美团')) {
+    return publicUrl('images/news/meituan-drone.jpg');
+  }
+  if (text.includes('飞行汽车') || text.includes('小鹏') || text.includes('消费')) {
+    return publicUrl('images/news/aeroht-flying-car.jpg');
+  }
+  if (text.includes('适航') || text.includes('垂直起降') || text.includes('载人') || text.includes('电动')) {
+    return publicUrl('images/news/aerofugia-ae200.jpg');
+  }
+  return publicUrl('images/low-altitude-hero.png');
 }
 
 function formatUsdBillion(value: number) {
