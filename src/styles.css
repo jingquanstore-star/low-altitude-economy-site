@@ -3561,6 +3561,14 @@ ul {
   font-size: 0.86rem;
 }
 
+.newsPaginationTop {
+  margin: 0 0 14px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(239, 250, 253, 0.76)),
+    linear-gradient(118deg, rgba(255, 138, 61, 0.04), transparent 36%);
+  box-shadow: 0 16px 34px rgba(62, 83, 133, 0.07);
+}
+
 .paginationControls {
   display: flex;
   align-items: center;

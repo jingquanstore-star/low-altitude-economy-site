@@ -252,6 +252,25 @@ function App() {
             <button key={mode} className={feedMode === mode ? 'selected' : ''} onClick={() => setFeedMode(mode)}>{mode}</button>
           ))}
         </div>
+        {!!filteredNews.length && (
+          <div className="paginationBar newsPaginationTop" aria-label="低空资讯分页">
+            <span>第 {currentNewsPage} / {totalNewsPages} 页，共 {filteredNews.length} 条动态</span>
+            <div className="paginationControls">
+              <button onClick={() => setNewsPage((page) => Math.max(1, page - 1))} disabled={currentNewsPage === 1}>上一页</button>
+              {paginationPages.map((page) => (
+                <button
+                  key={page}
+                  className={page === currentNewsPage ? 'active' : ''}
+                  onClick={() => setNewsPage(page)}
+                  aria-current={page === currentNewsPage ? 'page' : undefined}
+                >
+                  {page}
+                </button>
+              ))}
+              <button onClick={() => setNewsPage((page) => Math.min(totalNewsPages, page + 1))} disabled={currentNewsPage === totalNewsPages}>下一页</button>
+            </div>
+          </div>
+        )}
         <div className="newsGrid">
           {visibleNews.map((item) => {
             const heroImage = newsHeroImage(item);
@@ -282,40 +301,6 @@ function App() {
             );
           })}
         </div>
-        {!!filteredNews.length && (
-          <div className="paginationBar" aria-label="低空资讯分页">
-            <span>第 {currentNewsPage} / {totalNewsPages} 页，共 {filteredNews.length} 条动态</span>
-            <div className="paginationControls">
-              <button onClick={() => setNewsPage((page) => Math.max(1, page - 1))} disabled={currentNewsPage === 1}>上一页</button>
-              {paginationPages.map((page) => (
-                <button
-                  key={page}
-                  className={page === currentNewsPage ? 'active' : ''}
-                  onClick={() => setNewsPage(page)}
-                  aria-current={page === currentNewsPage ? 'page' : undefined}
-                >
-                  {page}
-                </button>
-              ))}
-              <button onClick={() => setNewsPage((page) => Math.min(totalNewsPages, page + 1))} disabled={currentNewsPage === totalNewsPages}>下一页</button>
-            </div>
-          </div>
-        )}
-        {(feedMode === '投融资' || feedMode === 'IPO') && (
-          <div className="marketPulseStrip" aria-label={`${feedMode}观察`}>
-            {listedCompanySamples.map((company) => {
-              const region = regions.find((item) => item.key === company.region);
-              return (
-                <article key={company.ticker}>
-                  <span>{region?.name} · {company.ticker}</span>
-                  <h3>{company.name}</h3>
-                  <p>{company.track}</p>
-                  <strong>{formatUsdBillion(company.marketCapUsdB)}</strong>
-                </article>
-              );
-            })}
-          </div>
-        )}
         {!filteredNews.length && <div className="emptyState">当前筛选下没有可展示的资讯，建议放宽分类、来源或地区条件。</div>}
       </section>
 
