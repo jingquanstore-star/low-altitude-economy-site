@@ -1542,6 +1542,14 @@ p {
   padding-top: 42px;
 }
 
+.homeNewsOnly {
+  padding-bottom: 86px;
+}
+
+.routePage {
+  min-height: calc(100vh - 120px);
+}
+
 .sectionTitle {
   display: flex;
   justify-content: space-between;
@@ -3608,6 +3616,385 @@ ul {
   opacity: 0.42;
 }
 
+.infiniteLoader {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  margin: 22px auto 0;
+  width: min(520px, 100%);
+  border: 1px solid rgba(42, 139, 168, 0.12);
+  border-radius: 10px;
+  padding: 18px 20px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(110, 231, 255, 0.14), transparent 42%),
+    rgba(255, 255, 255, 0.72);
+  color: #294b52;
+  text-align: center;
+  box-shadow: 0 18px 42px rgba(62, 83, 133, 0.07);
+}
+
+.infiniteLoader b {
+  font-size: 0.92rem;
+  font-weight: 780;
+}
+
+.infiniteLoader small {
+  color: #708386;
+  font-size: 0.78rem;
+}
+
+.loaderPulse {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--theme-accent);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--theme-accent) 36%, transparent);
+  animation: loaderSignal 1.7s ease-out infinite;
+}
+
+.librarySection {
+  padding-top: 34px;
+  padding-bottom: 96px;
+}
+
+.libraryHeader {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.34fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 18px;
+  border: 1px solid rgba(42, 139, 168, 0.14);
+  border-radius: 12px;
+  padding: 16px;
+  background:
+    radial-gradient(circle at 86% 12%, rgba(110, 231, 255, 0.14), transparent 34%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(239, 250, 253, 0.78));
+  box-shadow: 0 24px 62px rgba(62, 83, 133, 0.08);
+}
+
+.libraryTitle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.libraryTitle > span {
+  border-radius: 999px;
+  padding: 6px 9px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #60777b;
+  font-size: 0.76rem;
+  font-weight: 760;
+  white-space: nowrap;
+}
+
+.librarySearch {
+  justify-self: stretch;
+}
+
+.libraryFeatureBand {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(260px, 0.55fr);
+  gap: 18px;
+  align-items: end;
+  margin-bottom: 16px;
+  border: 1px solid rgba(42, 139, 168, 0.14);
+  border-radius: 12px;
+  padding: 20px;
+  background:
+    linear-gradient(120deg, rgba(23, 42, 67, 0.96), rgba(40, 127, 176, 0.88)),
+    radial-gradient(circle at 80% 10%, rgba(255, 207, 93, 0.22), transparent 34%);
+  color: #f7ffff;
+  box-shadow: 0 30px 70px rgba(62, 83, 133, 0.13);
+}
+
+.libraryFeatureBand span {
+  color: var(--theme-warm);
+  font-size: 0.78rem;
+  font-weight: 820;
+}
+
+.libraryFeatureBand h2 {
+  max-width: 720px;
+  margin: 8px 0 0;
+  font-size: clamp(1.35rem, 2.2vw, 2rem);
+  line-height: 1.16;
+}
+
+.libraryFeatureBand p {
+  margin: 0;
+  color: rgba(246, 255, 255, 0.74);
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+.libraryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.libraryCard,
+.reportCard {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(42, 139, 168, 0.13);
+  border-radius: 10px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(242, 250, 252, 0.84)),
+    radial-gradient(circle at 88% 10%, rgba(110, 231, 255, 0.1), transparent 34%);
+  box-shadow: 0 18px 44px rgba(62, 83, 133, 0.07);
+  transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+}
+
+.libraryCard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 386px;
+  padding: 18px;
+}
+
+.libraryCard:hover,
+.reportCard:hover {
+  transform: translateY(-5px);
+  border-color: rgba(255, 138, 61, 0.24);
+  box-shadow: 0 28px 64px rgba(62, 83, 133, 0.12);
+}
+
+.libraryCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 2px;
+  color: #517076;
+}
+
+.libraryCardTop span {
+  max-width: 62%;
+  border-radius: 999px;
+  padding: 6px 9px;
+  background: #eef6f6;
+  color: #315960;
+  font-size: 0.75rem;
+  font-weight: 780;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.libraryIdentity,
+.reportHeadline {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+
+.libraryIconMark {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 25% 18%, rgba(255, 207, 93, 0.28), transparent 34%),
+    linear-gradient(135deg, rgba(23, 42, 67, 0.98), rgba(40, 127, 176, 0.9));
+  color: #f7ffff;
+  box-shadow: 0 14px 28px rgba(62, 83, 133, 0.16);
+}
+
+.libraryIconMark.productMark {
+  background:
+    radial-gradient(circle at 72% 22%, rgba(110, 231, 255, 0.34), transparent 36%),
+    linear-gradient(135deg, #1e5d72, #43b5cf);
+}
+
+.libraryCard h3,
+.reportBody h3 {
+  margin-bottom: 4px;
+  color: var(--text-strong);
+  font-size: clamp(1.2rem, 1.65vw, 1.52rem);
+  line-height: 1.24;
+}
+
+.libraryCard strong,
+.reportBody strong {
+  display: block;
+  margin-bottom: 0;
+  color: #28636c;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.libraryCard p,
+.reportBody p {
+  color: #53676c;
+  font-size: 0.9rem;
+  line-height: 1.72;
+}
+
+.libraryStatusPanel,
+.libraryFactGrid div,
+.productScenario,
+.librarySignal {
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(237, 247, 248, 0.8);
+}
+
+.productLibraryCard {
+  background:
+    radial-gradient(circle at 86% 10%, rgba(110, 231, 255, 0.14), transparent 32%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(240, 250, 253, 0.86));
+}
+
+.productLibraryCard .productScenario {
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.productLibraryCard .productScenario + .productScenario {
+  border-left: 3px solid rgba(56, 213, 234, 0.42);
+}
+
+.libraryStatusPanel {
+  border-left: 3px solid var(--theme-accent);
+  background:
+    linear-gradient(90deg, rgba(255, 138, 61, 0.12), rgba(255, 207, 93, 0.08)),
+    rgba(255, 255, 255, 0.72);
+}
+
+.libraryStatusPanel b,
+.libraryFactGrid b,
+.productScenario b {
+  display: block;
+  color: #1b3940;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.libraryStatusPanel span,
+.libraryFactGrid span,
+.productScenario span,
+.librarySignal span {
+  display: block;
+  margin-bottom: 5px;
+  color: #728286;
+  font-size: 0.74rem;
+  font-weight: 760;
+}
+
+.libraryFactGrid {
+  display: grid;
+  grid-template-columns: 0.86fr 1.14fr;
+  gap: 8px;
+}
+
+.libraryTags,
+.specList {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin: 0;
+}
+
+.libraryTags span,
+.specList span,
+.libraryStatus {
+  border-radius: 999px;
+  padding: 6px 9px;
+  background: rgba(255, 255, 255, 0.78);
+  color: #35565d;
+  font-size: 0.74rem;
+  font-weight: 720;
+}
+
+.librarySignal p {
+  margin: 0;
+  color: #304b51;
+  font-size: 0.86rem;
+  line-height: 1.62;
+}
+
+.librarySummary {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: auto 0 0;
+  color: #687b7f;
+  font-size: 0.82rem;
+  line-height: 1.62;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.libraryStatus {
+  width: fit-content;
+  margin-top: 2px;
+  background: linear-gradient(90deg, rgba(255, 138, 61, 0.13), rgba(255, 207, 93, 0.16));
+  color: #74411f;
+}
+
+.reportTimeline {
+  display: grid;
+  gap: 12px;
+}
+
+.reportCard {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 0;
+}
+
+.reportDate {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  border-right: 1px solid rgba(42, 139, 168, 0.12);
+  padding: 18px;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(255, 207, 93, 0.16), transparent 34%),
+    rgba(241, 249, 250, 0.78);
+}
+
+.reportDate span {
+  color: #172a43;
+  font-size: 1.05rem;
+  font-weight: 820;
+}
+
+.reportDate b {
+  color: #61767a;
+  font-size: 0.78rem;
+}
+
+.reportBody {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+}
+
+.reportBody .libraryCardTop {
+  margin-bottom: 0;
+}
+
+.reportBody .libraryTags {
+  margin: 0;
+}
+
+.reportHeadline {
+  grid-template-columns: 34px minmax(0, 1fr);
+}
+
+.reportHeadline svg {
+  color: var(--theme-accent);
+}
+
+.reportBody .librarySignal {
+  margin-top: 0;
+}
+
 .marketPulseStrip {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -4120,6 +4507,19 @@ select {
   }
 }
 
+@keyframes loaderSignal {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--theme-accent) 38%, transparent);
+    transform: scale(0.9);
+  }
+
+  70%,
+  100% {
+    box-shadow: 0 0 0 14px color-mix(in srgb, var(--theme-accent) 0%, transparent);
+    transform: scale(1);
+  }
+}
+
 @keyframes towerScan {
   0%,
   24% {
@@ -4242,8 +4642,18 @@ select {
   }
 
   .newsGrid,
+  .libraryGrid,
   .sourceGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .libraryHeader,
+  .libraryFeatureBand {
+    grid-template-columns: 1fr;
+  }
+
+  .libraryTitle {
+    justify-content: space-between;
   }
 
   .filterPanel,
@@ -4431,6 +4841,7 @@ select {
   }
 
   .newsGrid,
+  .libraryGrid,
   .sourceGrid,
   .compareGrid,
   .signalColumns,
@@ -4438,6 +4849,42 @@ select {
   .marketPulseStrip,
   .compactSignals {
     grid-template-columns: 1fr;
+  }
+
+  .librarySection {
+    padding-top: 46px;
+  }
+
+  .libraryHeader {
+    gap: 14px;
+    padding: 14px;
+  }
+
+  .libraryTitle {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .libraryFeatureBand {
+    padding: 16px;
+  }
+
+  .libraryCard {
+    min-height: auto;
+    padding: 16px;
+  }
+
+  .reportCard {
+    grid-template-columns: 1fr;
+  }
+
+  .reportDate {
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    border-right: 0;
+    border-bottom: 1px solid rgba(42, 139, 168, 0.12);
+    padding: 14px 16px;
   }
 
   .spotlightCarousel {

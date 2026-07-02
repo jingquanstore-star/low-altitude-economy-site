@@ -62,6 +62,51 @@ export type Company = {
   status: string;
 };
 
+export type CompanyLibraryItem = {
+  id: string;
+  name: string;
+  region: RegionKey;
+  country: string;
+  track: string;
+  role: string;
+  status: string;
+  products: string[];
+  tags: string[];
+  summary: string;
+  latestSignal: string;
+  source: string;
+  url: string;
+};
+
+export type ProductLibraryItem = {
+  id: string;
+  name: string;
+  company: string;
+  region: RegionKey;
+  type: string;
+  scenario: string;
+  status: string;
+  specs: string[];
+  tags: string[];
+  summary: string;
+  source: string;
+  url: string;
+};
+
+export type ReportLibraryItem = {
+  id: string;
+  title: string;
+  publisher: string;
+  region: RegionKey | 'global';
+  date: string;
+  type: string;
+  focus: string[];
+  summary: string;
+  readValue: string;
+  source: string;
+  url: string;
+};
+
 export const regions: Region[] = [
   {
     key: 'china',
@@ -377,6 +422,284 @@ export const companies: Company[] = [
   { name: '小鹏汇天', region: 'china', track: '飞行汽车', status: '消费级形态探索' },
   { name: 'Volocopter', region: 'europe', track: '载人电动垂直起降飞行器', status: '城市示范与资金压力并存' },
   { name: 'Vertiport operators', region: 'middleEast', track: '起降基础设施', status: '高端出行示范导入' },
+];
+
+export const companyLibrary: CompanyLibraryItem[] = [
+  {
+    id: 'ehang',
+    name: '亿航智能',
+    region: 'china',
+    country: '中国',
+    track: '载人无人驾驶航空器',
+    role: '整机制造与运营示范',
+    status: '适航取证与商业运营推进',
+    products: ['EH216-S'],
+    tags: ['载人', '适航', '文旅', '城市空中交通'],
+    summary: '中国低空载人飞行器商业化的重要观察样本，核心变量是适航资质、生产资质、运营资质和城市示范航线密度。',
+    latestSignal: '围绕 EH216-S 推进商业示范和运营网络。',
+    source: '企业公开信息',
+    url: 'https://www.ehang.com/cn/',
+  },
+  {
+    id: 'autoflight',
+    name: '峰飞航空',
+    region: 'china',
+    country: '中国',
+    track: '电动垂直起降飞行器',
+    role: '吨级货运与载人平台',
+    status: '适航、订单和物流场景拓展',
+    products: ['V2000CG', '盛世龙'],
+    tags: ['货运', '城际物流', '海岛运输', '应急'],
+    summary: '以大型电动垂直起降飞行器切入货运和城际运输，适合观察低空物流早期商业闭环。',
+    latestSignal: '货运平台和载人平台并行推进。',
+    source: '企业公开信息',
+    url: 'https://www.autoflight.com/',
+  },
+  {
+    id: 'aerofugia',
+    name: '沃飞长空',
+    region: 'china',
+    country: '中国',
+    track: '载人电动垂直起降飞行器',
+    role: '整机制造',
+    status: '适航验证与运营伙伴拓展',
+    products: ['AE200'],
+    tags: ['载人', '适航', '城际出行', '吉利生态'],
+    summary: '中国载人电动垂直起降飞行器的重要梯队，后续关键是适航验证、运营伙伴和订单转化。',
+    latestSignal: 'AE200 持续推进适航验证。',
+    source: '企业公开信息',
+    url: 'https://www.aerofugia.com/',
+  },
+  {
+    id: 'aeroht',
+    name: '小鹏汇天',
+    region: 'china',
+    country: '中国',
+    track: '飞行汽车',
+    role: '消费级低空出行入口',
+    status: '产品定义、量产准备与场景验证',
+    products: ['陆地航母'],
+    tags: ['飞行汽车', '消费端', '低空出行', '量产'],
+    summary: '以分体式飞行汽车打开低空经济消费端想象空间，关键变量是量产节奏、驾驶培训和场景开放。',
+    latestSignal: '飞行汽车路线持续强化用户端认知。',
+    source: '企业公开信息',
+    url: 'https://www.aeroht.com/',
+  },
+  {
+    id: 'dji',
+    name: '大疆',
+    region: 'china',
+    country: '中国',
+    track: '行业无人机',
+    role: '无人机硬件与行业解决方案',
+    status: '规模化应用成熟',
+    products: ['行业无人机', '农业无人机', '大疆机场'],
+    tags: ['巡检', '农业', '测绘', '自动化机场'],
+    summary: '行业无人机和农业无人机已经形成更成熟的渠道、产品和现金流，是低空经济规模化基础盘。',
+    latestSignal: '行业应用、农业和自动化机场持续扩展。',
+    source: '企业公开信息',
+    url: 'https://enterprise.dji.com/cn',
+  },
+  {
+    id: 'meituan-drone',
+    name: '美团无人机',
+    region: 'china',
+    country: '中国',
+    track: '无人机即时配送',
+    role: '低空物流运营商',
+    status: '城市航线运营验证',
+    products: ['无人机配送系统'],
+    tags: ['即时配送', '城市物流', '运营网络', '餐饮零售'],
+    summary: '即时配送是低空经济更容易形成运营数据的场景，重点看航线密度、单均成本和监管协同。',
+    latestSignal: '城市无人机配送航线持续验证。',
+    source: '企业公开信息',
+    url: 'https://www.meituan.com/',
+  },
+  {
+    id: 'joby',
+    name: 'Joby Aviation',
+    region: 'us',
+    country: '美国',
+    track: '载人电动垂直起降飞行器',
+    role: '整机制造与空中出行运营',
+    status: '适航与商业化准备',
+    products: ['Joby S4'],
+    tags: ['载人', '美国联邦航空管理局', '机场接驳', '上市公司'],
+    summary: '美国先进空中交通代表公司之一，适航、制造爬坡、机场接入和现金流是核心观察点。',
+    latestSignal: '持续推进适航和商业运行准备。',
+    source: '企业投资者关系',
+    url: 'https://www.jobyaviation.com/',
+  },
+  {
+    id: 'archer',
+    name: 'Archer Aviation',
+    region: 'us',
+    country: '美国',
+    track: '载人电动垂直起降飞行器',
+    role: '整机制造与城市空中交通服务',
+    status: '订单、适航和合作伙伴推进',
+    products: ['Midnight'],
+    tags: ['载人', '机场接驳', '上市公司', '美国'],
+    summary: '美国电动垂直起降飞行器核心上市样本，适合跟踪订单、适航、制造和航线合作。',
+    latestSignal: '围绕 Midnight 推进适航和合作网络。',
+    source: '企业投资者关系',
+    url: 'https://www.archer.com/',
+  },
+];
+
+export const productLibrary: ProductLibraryItem[] = [
+  {
+    id: 'eh216s',
+    name: 'EH216-S',
+    company: '亿航智能',
+    region: 'china',
+    type: '载人无人驾驶航空器',
+    scenario: '低空文旅、城市空中交通、短途接驳',
+    status: '商业化示范推进',
+    specs: ['双座', '无人驾驶', '电动垂直起降'],
+    tags: ['载人', '适航', '文旅'],
+    summary: '中国低空载人飞行器商业化代表产品，适合观察适航资质与运营场景从示范走向常态化的过程。',
+    source: '亿航智能公开信息',
+    url: 'https://www.ehang.com/cn/',
+  },
+  {
+    id: 'ae200',
+    name: 'AE200',
+    company: '沃飞长空',
+    region: 'china',
+    type: '载人电动垂直起降飞行器',
+    scenario: '城际出行、机场接驳、城市空中交通',
+    status: '适航验证推进',
+    specs: ['载人', '复合翼构型', '电动垂直起降'],
+    tags: ['载人', '适航验证', '城际'],
+    summary: '面向载人低空出行的电动垂直起降飞行器，适航和运营伙伴落地是后续观察重点。',
+    source: '沃飞长空公开信息',
+    url: 'https://www.aerofugia.com/',
+  },
+  {
+    id: 'v2000cg',
+    name: 'V2000CG',
+    company: '峰飞航空',
+    region: 'china',
+    type: '吨级货运电动垂直起降飞行器',
+    scenario: '低空物流、海岛运输、应急配送',
+    status: '货运场景验证',
+    specs: ['大型货运', '电动垂直起降', '复合翼'],
+    tags: ['货运', '物流', '应急'],
+    summary: '货运电动垂直起降飞行器比载人出行更容易先形成商业闭环，适合跟踪订单和场景密度。',
+    source: '峰飞航空公开信息',
+    url: 'https://www.autoflight.com/',
+  },
+  {
+    id: 'land-aircraft-carrier',
+    name: '陆地航母',
+    company: '小鹏汇天',
+    region: 'china',
+    type: '分体式飞行汽车',
+    scenario: '个人低空出行、户外场景、应急补充',
+    status: '量产准备与场景教育',
+    specs: ['陆行体 + 飞行体', '消费级产品', '低空驾驶培训相关'],
+    tags: ['飞行汽车', '消费端', '量产'],
+    summary: '以消费级产品形态切入低空经济，关键在于法规、培训、交付和真实使用场景。',
+    source: '小鹏汇天公开信息',
+    url: 'https://www.aeroht.com/',
+  },
+  {
+    id: 'dji-dock',
+    name: '大疆机场',
+    company: '大疆',
+    region: 'china',
+    type: '无人机自动化作业平台',
+    scenario: '巡检、安防、测绘、园区管理',
+    status: '行业应用规模化',
+    specs: ['自动起降', '远程值守', '无人机任务管理'],
+    tags: ['基建', '自动化机场', '巡检'],
+    summary: '自动化机场是低空基础设施的重要产品形态，能把无人机从单机工具变成持续运营网络。',
+    source: '大疆行业应用公开信息',
+    url: 'https://enterprise.dji.com/cn',
+  },
+  {
+    id: 'midnight',
+    name: 'Midnight',
+    company: 'Archer Aviation',
+    region: 'us',
+    type: '载人电动垂直起降飞行器',
+    scenario: '机场接驳、城市空中交通',
+    status: '适航与商业化准备',
+    specs: ['载人', '电动垂直起降', '美国市场'],
+    tags: ['载人', '美国', '上市公司'],
+    summary: '美国城市空中交通代表机型之一，适合观察美国适航节奏和机场接驳商业模式。',
+    source: 'Archer Aviation 公开信息',
+    url: 'https://www.archer.com/',
+  },
+];
+
+export const reportLibrary: ReportLibraryItem[] = [
+  {
+    id: 'china-low-altitude-policy',
+    title: '中国低空经济政策与地方试点资料包',
+    publisher: '政府公开信息整理',
+    region: 'china',
+    date: '2026-05',
+    type: '政策资料',
+    focus: ['地方产业规划', '空域试点', '基础设施', '应用场景'],
+    summary: '跟踪中国低空经济相关政策、地方产业规划和公开试点信息，适合作为判断区域推进力度的基础资料。',
+    readValue: '判断哪些城市真正进入项目、招商、基础设施和运营落地阶段。',
+    source: '中国政府网 / 地方政府公开信息',
+    url: 'https://www.gov.cn/',
+  },
+  {
+    id: 'faa-aam',
+    title: '美国先进空中交通路线图',
+    publisher: '美国联邦航空管理局',
+    region: 'us',
+    date: '2026-04',
+    type: '监管框架',
+    focus: ['适航', '运行规则', '机场接入', '飞行员训练'],
+    summary: '美国先进空中交通商业化的重要监管参考，适合观察电动垂直起降飞行器进入商业运行前的门槛。',
+    readValue: '判断美国市场商业化时间表和关键监管瓶颈。',
+    source: 'FAA Advanced Air Mobility',
+    url: 'https://www.faa.gov/AAM',
+  },
+  {
+    id: 'nasa-aam',
+    title: '先进空中交通研究资料',
+    publisher: '美国国家航空航天局',
+    region: 'us',
+    date: '2026-04',
+    type: '技术研究',
+    focus: ['噪声', '空域仿真', '运行网络', '安全评估'],
+    summary: '长期研究城市接纳度、飞行网络仿真和安全评估，对产业趋势判断有参考价值。',
+    readValue: '理解城市低空运行不是单一飞行器问题，而是系统工程。',
+    source: 'NASA Advanced Air Mobility',
+    url: 'https://www.nasa.gov/mission/advanced-air-mobility/',
+  },
+  {
+    id: 'easa-uam',
+    title: '欧洲城市空中交通与无人机空域资料',
+    publisher: '欧洲航空安全局',
+    region: 'europe',
+    date: '2026-04',
+    type: '监管框架',
+    focus: ['U-space', '城市空中交通', '无人机运行', '安全监管'],
+    summary: '欧洲监管体系较细，适合观察复杂空域下无人机和载人航空融合管理经验。',
+    readValue: '为中国低空空域治理和城市运行规则提供对照。',
+    source: 'EASA Urban Air Mobility',
+    url: 'https://www.easa.europa.eu/en/domains/drones-air-mobility/topics/urban-air-mobility-uam',
+  },
+  {
+    id: 'market-sizing',
+    title: '全球先进空中交通市场规模参考',
+    publisher: '公开咨询机构资料',
+    region: 'global',
+    date: '2026-03',
+    type: '市场规模',
+    focus: ['市场空间', '城市空中交通', '增长预测', '统计口径'],
+    summary: '用于对照全球先进空中交通和城市空中交通市场预测，但需要注意统计范围和口径差异。',
+    readValue: '帮助判断新闻里的市场规模说法是否有可比口径。',
+    source: 'Grand View Research / IMARC Group',
+    url: 'https://www.grandviewresearch.com/horizon/outlook/urban-air-mobility-uam-market-size/global',
+  },
 ];
 
 export const quantRegions: QuantRegion[] = [

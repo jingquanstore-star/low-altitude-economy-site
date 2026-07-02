@@ -1,36 +1,40 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
-  ArrowRightLeft,
+  BadgeCheck,
+  Boxes,
+  Building2,
   CalendarDays,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
   EyeOff,
   ExternalLink,
-  Globe2,
+  FileText,
   RotateCcw,
   Search,
   Settings2,
-  ShieldCheck,
   Sparkles,
   X,
 } from 'lucide-react';
 import './styles.css';
 import {
-  listedCompanySamples,
-  marketSources,
+  companyLibrary,
   newsItems,
+  productLibrary,
   quantRegions,
+  reportLibrary,
   regions,
+  type CompanyLibraryItem,
   type NewsCategory,
+  type ProductLibraryItem,
   type RegionKey,
+  type ReportLibraryItem,
 } from './data';
 
 const categoryOptions: Array<NewsCategory | '全部'> = ['全部', '政策', '商业化', '适航', '基建', '技术', '融资'];
 const feedModes = ['行业资讯', '公司', '投融资', 'IPO'] as const;
 const auditStorageKey = 'low-altitude-news-audit-v1';
-const newsPageSize = 12;
 const publicUrl = (path: string) => `${import.meta.env.BASE_URL}${path}`;
 const templateCoverIds = new Set(['1', '2', '105']);
 
@@ -81,21 +85,14 @@ const emptyAuditState: AuditState = {
 };
 
 function App() {
-  const [activeRegion, setActiveRegion] = useState<RegionKey>('china');
-  const [compareRegion, setCompareRegion] = useState<RegionKey>('us');
   const [feedMode, setFeedMode] = useState<(typeof feedModes)[number]>('行业资讯');
   const [query, setQuery] = useState('');
+  const [libraryQuery, setLibraryQuery] = useState('');
   const [cachedNews, setCachedNews] = useState<DisplayNewsItem[]>([]);
   const [selectedNews, setSelectedNews] = useState<DisplayNewsItem | null>(null);
-  const [newsPage, setNewsPage] = useState(1);
   const [activeSpotlight, setActiveSpotlight] = useState(0);
   const [auditState, setAuditState] = useState<AuditState>(() => loadAuditState());
   const [appRoute, setAppRoute] = useState(() => getAppRoute());
-
-  const active = regions.find((region) => region.key === activeRegion) ?? regions[0];
-  const compare = regions.find((region) => region.key === compareRegion) ?? regions[1];
-  const activeQuant = quantRegions.find((item) => item.region === activeRegion) ?? quantRegions[0];
-  const compareQuant = quantRegions.find((item) => item.region === compareRegion) ?? quantRegions[1];
 
   useEffect(() => {
     loadNewsSnapshot(publicUrl('data/news-snapshot.json'))
@@ -151,8 +148,6 @@ function App() {
       }));
   }, [auditState, rawNews]);
 
-  const regionalNewsPool = useMemo(() => mergeNews(allNews, newsItems), [allNews]);
-
   const filteredNews = useMemo(() => {
     return allNews.filter((item) => {
       const modeMatch = feedModeMatches(item, feedMode);
@@ -161,14 +156,7 @@ function App() {
     });
   }, [allNews, feedMode, query]);
 
-  useEffect(() => {
-    setNewsPage(1);
-  }, [feedMode, query]);
-
-  const totalNewsPages = Math.max(1, Math.ceil(filteredNews.length / newsPageSize));
-  const currentNewsPage = Math.min(newsPage, totalNewsPages);
-  const visibleNews = filteredNews.slice((currentNewsPage - 1) * newsPageSize, currentNewsPage * newsPageSize);
-  const paginationPages = getPaginationPages(currentNewsPage, totalNewsPages);
+  const visibleNews = filteredNews;
   const spotlightNews = useMemo(() => getSpotlightNews(allNews), [allNews]);
 
   useEffect(() => {
@@ -184,22 +172,6 @@ function App() {
     }, 5800);
     return () => window.clearInterval(timer);
   }, [spotlightNews.length]);
-
-  const regionHotNews = useMemo(() => {
-    const sameRegion = regionalNewsPool.filter((item) => itemRegionKey(item) === activeRegion);
-    const prioritySameRegion = sameRegion.filter((item) => item.priority === '重点跟踪');
-    const globalBackup = regionalNewsPool.filter((item) => item.country === '全球' && item.priority === '重点跟踪');
-    const generalBackup = regionalNewsPool.filter((item) => item.priority === '重点跟踪');
-    if (sameRegion.length) return mergeNews(prioritySameRegion, sameRegion).slice(0, 3);
-    return mergeNews(globalBackup, generalBackup).slice(0, 3);
-  }, [activeRegion, regionalNewsPool]);
-
-  const regionCounts = useMemo(() => {
-    return regions.reduce<Record<RegionKey, number>>((counts, region) => {
-      counts[region.key] = regionalNewsPool.filter((item) => itemRegionKey(item) === region.key || item.country === region.name).length;
-      return counts;
-    }, {} as Record<RegionKey, number>);
-  }, [regionalNewsPool]);
 
   if (appRoute === 'admin') {
     return (
@@ -228,196 +200,84 @@ function App() {
         </div>
         <div className="navPills">
           <a href="#news">低空资讯</a>
-          <a href="#radar">全球雷达</a>
-          <a href="#compare">市场对比</a>
+          <a href="#companies">企业库</a>
+          <a href="#products">产品库</a>
+          <a href="#reports">报告库</a>
         </div>
       </nav>
 
-      <section className="section newsSection" id="news">
-        <div className="newsIntroPanel">
-          <p className="eyebrow sectionOnlyTitle">低空资讯</p>
-          <label className="searchBox heroSearch"><Search size={19} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索政策、企业、地区、融资、上市" /></label>
-        </div>
-        {spotlightNews.length > 0 && (
-          <SpotlightCarousel
-            items={spotlightNews}
-            activeIndex={activeSpotlight}
-            onOpen={setSelectedNews}
-            onPrev={() => setActiveSpotlight((index) => (index - 1 + spotlightNews.length) % spotlightNews.length)}
-            onNext={() => setActiveSpotlight((index) => (index + 1) % spotlightNews.length)}
-          />
-        )}
-        <div className="feedTabs">
-          {feedModes.map((mode) => (
-            <button key={mode} className={feedMode === mode ? 'selected' : ''} onClick={() => setFeedMode(mode)}>{mode}</button>
-          ))}
-        </div>
-        {!!filteredNews.length && (
-          <div className="paginationBar newsPaginationTop" aria-label="低空资讯分页">
-            <span>第 {currentNewsPage} / {totalNewsPages} 页，共 {filteredNews.length} 条动态</span>
-            <div className="paginationControls">
-              <button onClick={() => setNewsPage((page) => Math.max(1, page - 1))} disabled={currentNewsPage === 1}>上一页</button>
-              {paginationPages.map((page) => (
-                <button
-                  key={page}
-                  className={page === currentNewsPage ? 'active' : ''}
-                  onClick={() => setNewsPage(page)}
-                  aria-current={page === currentNewsPage ? 'page' : undefined}
-                >
-                  {page}
-                </button>
-              ))}
-              <button onClick={() => setNewsPage((page) => Math.min(totalNewsPages, page + 1))} disabled={currentNewsPage === totalNewsPages}>下一页</button>
-            </div>
+      {appRoute === 'public' && (
+        <section className="section newsSection homeNewsOnly" id="news">
+          <div className="newsIntroPanel">
+            <p className="eyebrow sectionOnlyTitle">低空资讯</p>
+            <label className="searchBox heroSearch"><Search size={19} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索政策、企业、地区、融资、上市" /></label>
           </div>
-        )}
-        <div className="newsGrid">
-          {visibleNews.map((item) => {
-            const heroImage = newsHeroImage(item);
-            return (
-              <button className="newsCard" onClick={() => setSelectedNews(item)} key={item.id}>
-                <div
-                  className={`newsVisual ${newsVisualType(item)} ${newsImageClass(item)} ${heroImage ? 'hasNewsImage' : ''}`}
-                  style={heroImage ? { backgroundImage: `url(${heroImage})` } : undefined}
-                  aria-hidden="true"
-                >
-                  {!heroImage && <span className="visualTitle">低空资讯</span>}
-                </div>
-                <div className="newsCardBody">
-                  <div className="newsMeta">
-                    <span>{item.country}</span>
-                    <span>{item.category}</span>
-                    <span>{item.sourceType}</span>
-                  </div>
-                  <h3>{item.title}</h3>
-                  <p>{item.summary}</p>
-                  <div className="newsFooter">
-                    <span><CalendarDays size={15} /> {item.date}</span>
-                    <span>{item.cacheMode}</span>
-                    <span>{item.source}</span>
-                  </div>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-        {!filteredNews.length && <div className="emptyState">当前筛选下没有可展示的资讯，建议放宽分类、来源或地区条件。</div>}
-      </section>
-
-      <section className="radarHero" id="radar">
-        <div className="sciRadar">
-          <div className="radarSummaryBar">
-            <p className="eyebrow sectionOnlyTitle"><Globe2 size={16} /> 全球雷达</p>
-            <div className="heroStats" aria-label="站点概览">
-              <Metric label="跟踪地区" value={regions.length} suffix="个" />
-              <Metric label="动态条目" value={allNews.length} suffix="条" />
-              <Metric label="来源口径" value={marketSources.length} suffix="类" />
-            </div>
+          {spotlightNews.length > 0 && (
+            <SpotlightCarousel
+              items={spotlightNews}
+              activeIndex={activeSpotlight}
+              onOpen={setSelectedNews}
+              onPrev={() => setActiveSpotlight((index) => (index - 1 + spotlightNews.length) % spotlightNews.length)}
+              onNext={() => setActiveSpotlight((index) => (index + 1) % spotlightNews.length)}
+            />
+          )}
+          <div className="feedTabs">
+            {feedModes.map((mode) => (
+              <button key={mode} className={feedMode === mode ? 'selected' : ''} onClick={() => setFeedMode(mode)}>{mode}</button>
+            ))}
           </div>
-          <div className="scannerPanel">
-            <div className="scannerTop">
-              <span>Signal Radar</span>
-              <strong>{active.name} · {regionHotNews.length} 条热点</strong>
-            </div>
-            <div className="scannerBody">
-              <div className="radarDisc" aria-label="地区雷达">
-                <div className="radarSweep" />
-                <div className="radarCore" />
-                {regions.map((region, index) => (
-                  <button
-                    key={region.key}
-                    className={`radarNode node${index + 1} ${region.key === activeRegion ? 'active' : ''}`}
-                    onClick={() => setActiveRegion(region.key)}
-                    aria-label={`查看${region.name}`}
-                  >
-                    <span />
-                    <b>{region.name}</b>
-                    <small>{regionCounts[region.key] ? `${regionCounts[region.key]} 条` : '入口'}</small>
-                  </button>
-                ))}
-              </div>
-              <article className="radarReadout">
-                <p className="eyebrow">{active.label}</p>
-                <h2>{active.name}</h2>
-                <p>{active.summary}</p>
-                <div className="signalChips">
-                  {[...active.signals.slice(0, 2), ...active.risks.slice(0, 1)].map((item) => <span key={item}>{item}</span>)}
-                </div>
-              </article>
-            </div>
-            <div className="signalTicker" aria-label="当前地区重点热点">
-              <div className="miniHeader">
-                <strong>热点信号</strong>
-                <span>点击查看详情</span>
-              </div>
-              <div className="tickerItems">
-                {regionHotNews.map((item) => (
-                  <button className="hotNewsItem" key={item.id} onClick={() => setSelectedNews(item)}>
-                    <span>{item.category}</span>
-                    <b>{item.title}</b>
-                    <small>{item.source}</small>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="section compareSection" id="compare">
-        <div className="sectionTitle">
-          <p className="eyebrow sectionOnlyTitle"><ShieldCheck size={18} /> 市场对比</p>
-        </div>
-        <div className="methodNote">
-          <ShieldCheck size={18} />
-          <span>数据口径：市值仅为公开上市公司样本，不代表完整低空经济规模；市场潜力来自公开报告或报道口径，需结合来源时间和统计范围解读。</span>
-        </div>
-        <div className="compareControls">
-          <SelectRegion value={activeRegion} onChange={setActiveRegion} />
-          <ArrowRightLeft size={22} />
-          <SelectRegion value={compareRegion} onChange={setCompareRegion} />
-        </div>
-        <div className="compareGrid">
-          <QuantCard region={active} quant={activeQuant} />
-          <QuantCard region={compare} quant={compareQuant} />
-        </div>
-        <div className="companyTable">
-          <div className="tableHeader">
-            <h3>上市公司样本</h3>
-            <span>市值为原型数据，后续可接行情接口自动刷新</span>
-          </div>
-          <div className="tableRows">
-            <div className="companyRow companyHead">
-              <strong>代码</strong>
-              <span>公司</span>
-              <span>地区</span>
-              <span>赛道</span>
-              <b>样本市值</b>
-            </div>
-            {listedCompanySamples.map((company) => {
-              const region = regions.find((item) => item.key === company.region);
+          <div className="newsGrid">
+            {visibleNews.map((item) => {
+              const heroImage = newsHeroImage(item);
               return (
-                <div className="companyRow" key={company.ticker}>
-                  <strong>{company.ticker}</strong>
-                  <span>{company.name}</span>
-                  <span>{region?.name}</span>
-                  <span>{company.track}</span>
-                  <b>{formatUsdBillion(company.marketCapUsdB)}</b>
-                </div>
+                <button className="newsCard" onClick={() => setSelectedNews(item)} key={item.id}>
+                  <div
+                    className={`newsVisual ${newsVisualType(item)} ${newsImageClass(item)} ${heroImage ? 'hasNewsImage' : ''}`}
+                    style={heroImage ? { backgroundImage: `url(${heroImage})` } : undefined}
+                    aria-hidden="true"
+                  >
+                    {!heroImage && <span className="visualTitle">低空资讯</span>}
+                  </div>
+                  <div className="newsCardBody">
+                    <div className="newsMeta">
+                      <span>{item.country}</span>
+                      <span>{item.category}</span>
+                      <span>{item.sourceType}</span>
+                    </div>
+                    <h3>{item.title}</h3>
+                    <p>{item.summary}</p>
+                    <div className="newsFooter">
+                      <span><CalendarDays size={15} /> {item.date}</span>
+                      <span>{item.cacheMode}</span>
+                      <span>{item.source}</span>
+                    </div>
+                  </div>
+                </button>
               );
             })}
           </div>
-        </div>
-        <div className="sourceGrid marketSourceGrid">
-          {marketSources.map((source) => (
-            <a className="sourceCard" href={source.url} target="_blank" rel="noreferrer" key={source.title}>
-              <h3>{source.title}</h3>
-              <strong>{source.value}</strong>
-              <p>{source.source}</p>
-            </a>
-          ))}
-        </div>
-      </section>
+          {!filteredNews.length && <div className="emptyState">当前筛选下没有可展示的资讯，建议放宽分类、来源或地区条件。</div>}
+          {!!filteredNews.length && (
+            <div className="infiniteLoader" aria-live="polite">
+              <span className="loaderPulse" aria-hidden="true" />
+              <b>当前筛选下已显示 {filteredNews.length} 条资讯</b>
+              <small>后续抓取进入后，信息流会继续向下延展。</small>
+            </div>
+          )}
+        </section>
+      )}
+
+      {appRoute === 'companies' && (
+        <CompanyLibraryPage query={libraryQuery} onQueryChange={setLibraryQuery} />
+      )}
+
+      {appRoute === 'products' && (
+        <ProductLibraryPage query={libraryQuery} onQueryChange={setLibraryQuery} />
+      )}
+
+      {appRoute === 'reports' && (
+        <ReportLibraryPage query={libraryQuery} onQueryChange={setLibraryQuery} />
+      )}
 
       {selectedNews && <NewsDetailModal item={selectedNews} onClose={() => setSelectedNews(null)} />}
 
@@ -491,6 +351,197 @@ function SpotlightCarousel({
       </aside>
     </section>
   );
+}
+
+function CompanyLibraryPage({ query, onQueryChange }: { query: string; onQueryChange: (value: string) => void }) {
+  const items = useMemo(() => companyLibrary.filter((item) => libraryMatch(item, query)), [query]);
+
+  return (
+    <section className="section librarySection routePage" id="companies">
+      <LibraryHeader
+        icon={<Building2 size={18} />}
+        title="企业库"
+        count={items.length}
+        total={companyLibrary.length}
+        query={query}
+        onQueryChange={onQueryChange}
+        placeholder="搜索企业、赛道、产品、国家"
+      />
+      <div className="libraryFeatureBand">
+        <div>
+          <span>企业画像</span>
+          <h2>从公司、产品、适航与场景理解低空产业链</h2>
+        </div>
+        <p>第一版先沉淀核心企业样本，后续可以继续扩展融资、订单、适航节点和关联资讯。</p>
+      </div>
+      <div className="libraryGrid companyLibraryGrid">
+        {items.map((item) => (
+          <a className="libraryCard companyLibraryCard" href={item.url} target="_blank" rel="noreferrer" key={item.id}>
+            <div className="libraryCardTop">
+              <span>{item.country}</span>
+              <span>{item.role}</span>
+            </div>
+            <div className="libraryIdentity">
+              <div className="libraryIconMark"><Building2 size={20} /></div>
+              <div>
+                <h3>{item.name}</h3>
+                <strong>{item.track}</strong>
+              </div>
+            </div>
+            <div className="libraryStatusPanel">
+              <span>当前阶段</span>
+              <b>{item.status}</b>
+            </div>
+            <div className="libraryFactGrid">
+              <div>
+                <span>核心产品</span>
+                <b>{item.products.slice(0, 2).join(' / ')}</b>
+              </div>
+              <div>
+                <span>重点观察</span>
+                <b>{item.latestSignal}</b>
+              </div>
+            </div>
+            <div className="libraryTags">
+              {item.tags.slice(0, 4).map((tag) => <span key={tag}>{tag}</span>)}
+            </div>
+            <p className="librarySummary">{item.summary}</p>
+          </a>
+        ))}
+      </div>
+      {!items.length && <LibraryEmpty />}
+    </section>
+  );
+}
+
+function ProductLibraryPage({ query, onQueryChange }: { query: string; onQueryChange: (value: string) => void }) {
+  const items = useMemo(() => productLibrary.filter((item) => libraryMatch(item, query)), [query]);
+
+  return (
+    <section className="section librarySection routePage" id="products">
+      <LibraryHeader
+        icon={<Boxes size={18} />}
+        title="产品库"
+        count={items.length}
+        total={productLibrary.length}
+        query={query}
+        onQueryChange={onQueryChange}
+        placeholder="搜索产品、企业、适航、物流、飞行汽车"
+      />
+      <div className="libraryGrid productLibraryGrid">
+        {items.map((item) => (
+          <a className="libraryCard productLibraryCard" href={item.url} target="_blank" rel="noreferrer" key={item.id}>
+            <div className="libraryCardTop">
+              <span>{regionName(item.region)}</span>
+              <span>{item.status}</span>
+            </div>
+            <div className="libraryIdentity">
+              <div className="libraryIconMark productMark"><Boxes size={20} /></div>
+              <div>
+                <h3>{item.name}</h3>
+                <strong>{item.company}</strong>
+              </div>
+            </div>
+            <div className="productScenario">
+              <span>产品类型</span>
+              <b>{item.type}</b>
+            </div>
+            <div className="productScenario">
+              <span>应用场景</span>
+              <b>{item.scenario}</b>
+            </div>
+            <div className="specList">
+              {item.specs.map((spec) => <span key={spec}>{spec}</span>)}
+            </div>
+            <p className="librarySummary">{item.summary}</p>
+          </a>
+        ))}
+      </div>
+      {!items.length && <LibraryEmpty />}
+    </section>
+  );
+}
+
+function ReportLibraryPage({ query, onQueryChange }: { query: string; onQueryChange: (value: string) => void }) {
+  const items = useMemo(() => reportLibrary.filter((item) => libraryMatch(item, query)), [query]);
+
+  return (
+    <section className="section librarySection routePage" id="reports">
+      <LibraryHeader
+        icon={<FileText size={18} />}
+        title="报告库"
+        count={items.length}
+        total={reportLibrary.length}
+        query={query}
+        onQueryChange={onQueryChange}
+        placeholder="搜索报告、机构、政策、市场规模"
+      />
+      <div className="reportTimeline">
+        {items.map((item) => (
+          <a className="reportCard" href={item.url} target="_blank" rel="noreferrer" key={item.id}>
+            <div className="reportDate">
+              <span>{item.date}</span>
+              <b>{regionName(item.region)}</b>
+            </div>
+            <div className="reportBody">
+              <div className="libraryCardTop">
+                <span>{item.type}</span>
+                <span>{item.publisher}</span>
+              </div>
+              <div className="reportHeadline">
+                <FileText size={20} />
+                <h3>{item.title}</h3>
+              </div>
+              <div className="libraryTags">
+                {item.focus.map((focus) => <span key={focus}>{focus}</span>)}
+              </div>
+              <div className="librarySignal">
+                <span>阅读价值</span>
+                <p>{item.readValue}</p>
+              </div>
+              <p className="librarySummary">{item.summary}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+      {!items.length && <LibraryEmpty />}
+    </section>
+  );
+}
+
+function LibraryHeader({
+  icon,
+  title,
+  count,
+  total,
+  query,
+  onQueryChange,
+  placeholder,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  count: number;
+  total: number;
+  query: string;
+  onQueryChange: (value: string) => void;
+  placeholder: string;
+}) {
+  return (
+    <div className="libraryHeader">
+      <div className="libraryTitle">
+        <p className="eyebrow sectionOnlyTitle">{icon} {title}</p>
+        <span>{count} / {total} 条</span>
+      </div>
+      <label className="searchBox heroSearch librarySearch">
+        <Search size={19} />
+        <input value={query} onChange={(event) => onQueryChange(event.target.value)} placeholder={placeholder} />
+      </label>
+    </div>
+  );
+}
+
+function LibraryEmpty() {
+  return <div className="emptyState">当前搜索下没有匹配内容，可以换一个企业、产品、场景或地区关键词。</div>;
 }
 
 function QuantCard({ region, quant }: { region: typeof regions[number]; quant: typeof quantRegions[number] }) {
@@ -810,6 +861,17 @@ function formatUsdBillion(value: number) {
   return `约${(value * 10).toFixed(1)}亿美元`;
 }
 
+function regionName(region: RegionKey | 'global') {
+  if (region === 'global') return '全球';
+  return regions.find((item) => item.key === region)?.name ?? region;
+}
+
+function libraryMatch(item: CompanyLibraryItem | ProductLibraryItem | ReportLibraryItem, query: string) {
+  const normalizedQuery = query.trim().toLowerCase();
+  if (!normalizedQuery) return true;
+  return JSON.stringify(item).toLowerCase().includes(normalizedQuery);
+}
+
 function normalizeDate(value: string) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value || '待确认';
@@ -859,20 +921,12 @@ function loadAuditState(): AuditState {
 
 function getAppRoute() {
   if (typeof window === 'undefined') return 'public';
-  return window.location.hash === '#admin' ? 'admin' : 'public';
-}
-
-function getPaginationPages(currentPage: number, totalPages: number) {
-  if (totalPages <= 5) {
-    return Array.from({ length: totalPages }, (_, index) => index + 1);
-  }
-
-  if (currentPage <= 3) return [1, 2, 3, 4, 5];
-  if (currentPage >= totalPages - 2) {
-    return Array.from({ length: 5 }, (_, index) => totalPages - 4 + index);
-  }
-
-  return [currentPage - 2, currentPage - 1, currentPage, currentPage + 1, currentPage + 2];
+  const hash = window.location.hash;
+  if (hash === '#admin') return 'admin';
+  if (hash === '#companies') return 'companies';
+  if (hash === '#products') return 'products';
+  if (hash === '#reports') return 'reports';
+  return 'public';
 }
 
 function unique(values: string[]) {
